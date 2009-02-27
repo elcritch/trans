@@ -1,3 +1,5 @@
+#include "tree.h"
+
 static void g_stmt(TreeStmt stmt) {
   if (!stmt)
     return;
