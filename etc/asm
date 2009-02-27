@@ -1,0 +1,117 @@
+#!/usr/bin/perl -w
+
+############################################################
+# Who:    Jim Buffenbarger <buff@cs.BoiseState.edu>
+# Why:    COMPSCI 450: Programming Language Translation
+# When:   Spring 2008
+# Perl:   5.8.6
+# What:   This is a simple: assembler, linker, loader,
+#         and computer simulator.
+############################################################
+
+use strict;
+use Carp;
+
+my @mem=();                             # memory
+my %sym=("\$pc"=>undef,"\$sp"=>undef);  # symbols
+
+sub PCL() { return \$sym{"\$pc"}; }     # reference to pc l-value
+sub SPL() { return \$sym{"\$sp"}; }     # reference to sp l-value
+
+sub PCR() { return \$mem[${PCL()}]; }   # reference to pc r-value
+sub SPR() { return \$mem[${SPL()}]; }   # reference to sp r-value
+
+sub Load () {
+    my $ip=0;                           # instruction pointer
+    while (<>) {                        # read line
+	s{\#.*}{};                      # remove comment
+	my @in=split(" ");              # instruction fields
+	next if $#in<0;                 # skip blank line
+	last if $in[0] eq "end";        # end of program
+	if ($in[0]=~m{^[\$\w]+:$}) {    # is first field a label?
+	    $in[0]=~s{:$}{};            # remove colon
+	    $sym{$in[0]}=$ip;           # save label and address
+	    shift(@in);                 # remove label from instruction
+	    next if $#in<0;             # skip label-only line
+	}
+	$mem[$ip++]=join(" ",@in);      # load instruction into memory
+    }
+    ${PCL()}=$ip++; ${PCR()}=0;         # init program counter
+    ${SPL()}=$ip++; ${SPR()}=${SPL()};  # init stack pointer
+}
+
+sub Execute($) {
+    my @in=split(" ",shift);
+    my $op=shift(@in);
+    if    ($op eq "ld")   { Ild(@in); }
+    elsif ($op eq "st")   { Ist(@in); }
+    elsif ($op eq "push") { Ipush(@in); }
+    elsif ($op eq "pop")  { Ipop(@in); }
+    elsif ($op eq "dup")  { Idup(@in); }
+    elsif ($op eq "swap") { Iswap(@in); }
+    elsif ($op eq "add")  { Iadd(@in); }
+    elsif ($op eq "sub")  { Isub(@in); }
+    elsif ($op eq "mul")  { Imul(@in); }
+    elsif ($op eq "div")  { Idiv(@in); }
+    elsif ($op eq "mod")  { Imod(@in); }
+    elsif ($op eq "not")  { Inot(@in); }
+    elsif ($op eq "jmp")  { Ijmp(@in); }
+    elsif ($op eq "jz")   { Ijz(@in); }
+    elsif ($op eq "jp")   { Ijp(@in); }
+    elsif ($op eq "jn")   { Ijn(@in); }
+    elsif ($op eq "rd")   { Ird(@in); }
+    elsif ($op eq "wr")   { Iwr(@in); }
+    elsif ($op eq "stop") { ${PCR()}=undef; }
+    else                  { Dump(@in); }
+}
+
+sub Run () {
+    Execute($mem[${PCR()}++]) while defined(${PCR()});
+}
+
+sub Main () {
+    Load();
+    Run();
+}
+
+Main();
+
+sub Push($) { my $v=shift; $mem[++${SPR()}]=$v.""; }
+sub Pop()   { return $mem[${SPR()}--]; }
+
+sub Val($) {
+    my $v=shift;
+    my $a=$sym{$v};
+    return $a if defined($a);
+    return $v;
+}
+
+sub Not($)  { return (shift eq "0" ? "1" : "0"); }
+
+sub Dump() {
+    printf("\$pc(%s):%s\n",${PCL()},${PCR()});
+    printf("\$sp(%s):%s\n",${SPL()},${SPR()});
+    for my $i (0..$#mem) {
+	printf("$i:<%s> ",$mem[$i]);
+    }
+    printf("\n");
+}
+
+sub Ild() 	{ Push($mem[Pop()]); }
+sub Ist() 	{ $mem[Pop()]=Pop(); }
+sub Ipush($) 	{ Push(Val(shift)); }
+sub Ipop() 	{ Pop(); }
+sub Idup() 	{ my $v=Pop(); Push($v); Push($v); }
+sub Iswap() 	{ my $v1=Pop(); my $v2=Pop(); Push($v1); Push($v2); }
+sub Iadd() 	{ Push(Pop()+Pop()); }
+sub Isub() 	{ Iswap(); Push(Pop()-Pop()); }
+sub Imul() 	{ Push(Pop()*Pop()); }
+sub Idiv() 	{ Iswap(); Push(Pop()/Pop()); }
+sub Imod() 	{ Iswap(); Push(Pop()%Pop()); }
+sub Inot() 	{ Push(Not(Pop())); }
+sub Ijmp($) 	{ ${PCR()}=Pop(); }
+sub Ijz($) 	{ my $l=Pop(); my $c=Pop(); ${PCR()}=$l if $c==0; }
+sub Ijp($) 	{ my $l=Pop(); my $c=Pop(); ${PCR()}=$l if $c>0; }
+sub Ijn($) 	{ my $l=Pop(); my $c=Pop(); ${PCR()}=$l if $c<0; }
+sub Ird() 	{ chomp(my $s=<>); Push($s); }
+sub Iwr() 	{ printf("%s\n",Pop()); }
