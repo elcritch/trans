@@ -3,6 +3,7 @@
 #include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <ctype.h>
 
 #include "scanner.h"
 #include "tokenentry.h"
