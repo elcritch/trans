@@ -6,26 +6,31 @@ $sp = "   "
 $sp2 = $sp*2
 
 def term?(tok)
-  return tok =~ /^'.+'$/
+  return (tok =~ /^'.+'$/) != nil
 end
 
 def rule?(tok)
-  return !sym?(tok)
+  return !term?(tok)
 end
 
 def sym(tok)
   regex = Regexp.new(/^'(.*)'$/)
   match = regex.match(tok)
   symtab = {
-    '<='=>'TOK_LE',
-    '!='=>'TOK_NE',
-    '=='=>'TOK_EQ',
-    '>='=>'TOK_GE',
-    '&&'=>'TOK_AND',
-    '||'=>'TOK_OR',
+    '<='=>'LE',
+    '!='=>'NE',
+    '=='=>'EQ',
+    '>='=>'GE',
+    '&&'=>'AND',
+    '||'=>'OR',
   }
-  return symtab[match[0]] if match and (symtab.keys.include? match[0])
+  return symtab[match[1]] if match and (symtab.keys.include? match[1])
   return match ? match[1] : tok
+end
+
+def tp_name(rule, prod)
+   tok = prod.collect{ |p| sym(p) if rule?(p) }.compact.first 
+   return "t_#{rule.gsub(/__/,'')}_#{tok}"
 end
 
 def eater(tok)
@@ -45,13 +50,13 @@ end
 
 def caser(rule, prod)
   toks = prod.collect { |p| eater(p) }
-  args = prod.collect { |p| p if p =~ /^\w+/ }
+  args = prod.collect { |p| p if rule?(p) }.compact
   cas = "TOK_#{sym(prod.first)}"
   cas = "#{prod.first}" if sym(prod.first).length == 1
-  
+
   return """      case #{cas}: {
          #{ toks*";\n#{$sp*3}" };
-         #{rule} = t_#{rule}_#{sym(prod.first)}(#{ args*', ' });
+         #{rule} = #{tp_name(rule,prod)}(#{args*', '});
          break;
       }"""
 end
@@ -70,12 +75,12 @@ def functer(rule, prods)
    BODY
   elsif prods.length == 1
     toks = prods.first.collect { |p| eater(p) }
-    args = prods.first.collect { |p| p if p =~ /^\w+/ }
+    args = prods.first.collect { |p| p if rule?(p) }.compact
     
     body = <<-BODY
    // body
    #{ toks*";\n#{$sp}" };
-   #{rule} = t_#{rule}_#{prods.first.first}(#{ args*', ' });
+   #{rule} = #{tp_name(rule,prods.first)}(#{args*', '});
 BODY
   end
   
@@ -89,7 +94,7 @@ static Tree#{rule.capitalize} p_#{rule}(void) {
    Tree#{rule.capitalize} = 0; // set null by default
    TokenCode code = curr()->code;
 #{body}
-   return stmt;
+   return #{rule};
 }
 
 
