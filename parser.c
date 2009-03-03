@@ -1,3 +1,5 @@
+#include "tree.h"
+
 // stmt : loc '=' bool ';'
 //      | 'while' '(' bool ')' stmt
 //      | 'break' ';'
@@ -6,11 +8,11 @@ static TreeStmt p_stmt(void) {
   TokenCode code=curr()->code;
   switch (code) {
     case TOK_ID: {
-      TreeLoc loc=p_loc();
+      TreeLoc loc = p_loc();
       eat('=');
-      TreeBool bool=p_bool();
+      TreeBool bool = p_bool();
       eat(';');
-      stmt=t_stmt_assign(loc,bool);
+      stmt = t_stmt_assign(loc,bool);
       break;
     }
     case TOK_while: {
@@ -19,7 +21,7 @@ static TreeStmt p_stmt(void) {
       TreeBool bool=p_bool();
       eat(')');
       TreeStmt body=p_stmt();
-      stmt=t_stmt_while(bool,body);
+      stmt = t_stmt_while(bool,body);
       break;
     }
     case TOK_break: {

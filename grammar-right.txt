@@ -1,71 +1,90 @@
-Program  : block
-
-block    : '{' decls stmts '}'
-
-decls    : decl decls
-         |
-
-decl     : type id ';'
-
-type     : type '[' num ']'
-         | basic
-
-basic    : 'int'
-         | 'float'
-
-stmts    : stmt stmts
-         |
-
-stmt     : loc '=' bool ';'
-         | 'if' '(' bool ')' stmt
-         | 'if' '(' bool ')' stmt 'else' stmt
-         | 'while' '(' bool ')' stmt
-         | 'do' stmt 'while' '(' bool ')' ';'
-         | 'break' ';'
-         | block
-         | 'read' loc ';'
-         | 'write' bool ';'
-
-loc      : loc '[' bool ']'
-         | id
-
-bool     : bool '||' join
-         | join
-
-bool     : join bool__
-
-bool__   : '||' join bool__ 
-         |  
+Program    : block
 
 
-join     : join '&&' equality
-         | equality
+block      : '{' decls stmts '}'
 
-equality : equality '==' rel
-         | equality '!=' rel
-         | rel
 
-rel      : expr '<' expr
-         | expr '<=' expr
-         | expr '>=' expr
-         | expr '>' expr
-         | expr
+decls      : decl decls
+           |  
 
-expr     : expr '+' term
-         | expr '-' term
-         | term
 
-term     : term '*' unary
-         | term '/' unary
-         | unary
+decl       : type id ';'
 
-unary    : '!' unary
-         | '-' unary
-         | factor
 
-factor   : '(' bool ')'
-         | loc
-         | num
-         | real
-         | 'true'
-         | 'false'
+type       : basic type__
+
+type__     : '[' num ']' type__
+           |  
+
+basic      : 'int'
+           | 'float'
+
+
+stmts      : stmt stmts
+           |  
+
+
+stmt       : loc '=' bool ';'
+           | 'if' '(' bool ')' stmt
+           | 'if' '(' bool ')' stmt 'else' stmt
+           | 'while' '(' bool ')' stmt
+           | 'do' stmt 'while' '(' bool ')' ';'
+           | 'break' ';'
+           | block
+           | 'read' loc ';'
+           | 'write' bool ';'
+
+
+loc        : id loc__
+
+loc__      : '[' bool ']' loc__
+           |  
+
+bool       : join bool__
+
+bool__     : '||' join bool__
+           |  
+
+join       : equality join__
+
+join__     : '&&' equality join__
+           |  
+
+equality   : rel equality__
+
+equality__ : '==' rel equality__
+           | '!=' rel equality__
+           |  
+
+rel        : expr '<' expr
+           | expr '<=' expr
+           | expr '>=' expr
+           | expr '>' expr
+           | expr
+
+
+expr       : term expr__
+
+expr__     : '+' term expr__
+           | '-' term expr__
+           |  
+
+term       : unary term__
+
+term__     : '*' unary term__
+           | '/' unary term__
+           |  
+
+unary      : '!' unary
+           | '-' unary
+           | factor
+
+
+factor     : '(' bool ')'
+           | loc
+           | num
+           | real
+           | 'true'
+           | 'false'
+
+

@@ -38,7 +38,7 @@ def process():
         if leftrec:
             terms = [ p for p in prods if p[0]!=rule]
             right[rule] = [ t+[rule_] for t in terms ]
-            right[rule_] = [ [rule_]+p[1:] for p in leftrec ]
+            right[rule_] = [ p[1:]+[rule_] for p in leftrec ]
             right[rule_].append([' '])
         else:
             right[rule] = grammar[rule]
