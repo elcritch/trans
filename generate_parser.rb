@@ -33,8 +33,8 @@ def tp_name(rule, prod)
    return "t_#{rule.gsub(/__/,'').downcase}_#{tok}"
 end
 
-def lvar(tok)
-   return "l#{tok}"
+def lvar(tok,i)
+   return "l#{i}#{tok}"
 end
 
 def reduce_tok(tok)
@@ -42,7 +42,7 @@ def reduce_tok(tok)
    
    tok 
 end
-def eater(tok)
+def eater(tok,i)
   str = ""
   if literal?(tok)
     tk = sym(tok)
@@ -52,14 +52,16 @@ def eater(tok)
       str = "eat(TOK_#{tk})"
     end
   else
-    str = "Tree#{tok.capitalize} #{lvar(tok)} = p_#{tok}()"
+    str = "Tree#{tok.capitalize} #{lvar(tok,i)} = p_#{tok}()"
   end
   return str
 end
 
-def caser(rule, prod)
-  toks = prod.map { |p| eater(p) }
-  args = prod.map { |p| lvar(p) if rule?(p) }.compact
+def caser(rule, prod, arg0=nil)
+  toks = prod.each_with_index.map { |p,i| eater(p,i) }
+  args = prod.each_with_index.map { |p,i| lvar(p,i) if rule?(p) }.compact
+  args.unshift(arg0) if arg0
+  
   cas = "TOK_#{sym(prod.first)}"
   cas = "#{prod.first}" if sym(prod.first).length == 1
 
@@ -77,21 +79,24 @@ def functer(rule, prods)
   if prods.length > 1
     cmn = prods.map{|p| rule?(p[0]) and (p.first==prods[0][0]) }
     cmn = !(cmn.include? false)
-    cmnf = "#{eater prods[0].first}; // common" if cmn
-    prods = prods.map{ |p|  p[1..-1] }
-    prods[-1] = [] if not prods.last
+    if cmn
+       arg0 = lvar(prods[0].first,0)
+       cmnf = "#{eater(prods[0].first, 0)}; // common"
+       prods = prods.map{ |p|  p[1..-1] } if cmn
+       prods[-1] = [] if not prods.last
+    end
     
     body = <<-BODY   
    // cases
    #{cmnf}
    switch (code) {
-#{ prods.map {|p| caser(rule, p) if not p.empty? }*"\n" }
+#{ prods.map {|p| caser(rule, p, arg0) if not p.empty? }*"\n" }
 #{default}
    }   
    BODY
   elsif prods.length == 1
-    toks = prods.first.map { |p| eater(p) }
-    args = prods.first.map { |p| lvar(p) if rule?(p) }.compact
+    toks = prods.first.each_with_index.map { |p,i| eater(p,i) }
+    args = prods[0].each_with_index.map{ |p,i| lvar(p,i) if rule?(p) }.compact
     body = <<-BODY
    // body
    #{ toks*";\n#{$sp}" };
