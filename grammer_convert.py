@@ -4,6 +4,7 @@ import os, sys
 grammar = {}
 right = {}
 order = []
+PostFix = '_1'
 
 def parse(name):
     global grammar, right
@@ -31,12 +32,16 @@ def parse(name):
 def process():
     global grammar, right
     
-    for rule,prods in grammar.items():
-        rule_ = rule+'__'
+    for i, rule in enumerate(order):
+        prods = grammar[rule]
+        rule_ = rule+PostFix
         
+        # for 
+        
+        # eliminate immediate left recursion
         leftrec = [ p for p in prods if p[0]==rule]
         if leftrec:
-            terms = [ p for p in prods if p[0]!=rule]
+            terms = [ p for p in prods if p[0] != rule ]
             right[rule] = [ t+[rule_] for t in terms ]
             right[rule_] = [ p[1:]+[rule_] for p in leftrec ]
             right[rule_].append([' '])
@@ -62,9 +67,9 @@ if __name__ == '__main__':
     parse(fl)
     process()
     
-    reduced = [ g for g in right if g.endswith('__') ]
+    reduced = [ g for g in right if g.endswith(PostFix) ]
     for r in order:
-        r_ = r+'__'
+        r_ = r+PostFix
         pprint(r)
         print 
         
