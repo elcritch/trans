@@ -11,6 +11,7 @@ static TreeProgram p_Program(void) {
    TreeBlock l0block = p_block();
    Program = t_program_block(l0block);
 
+   
    return Program;
 }
 
@@ -30,6 +31,7 @@ static TreeBlock p_block(void) {
    eat('}');
    block = t_block_decls(l1decls, l2stmts);
 
+   
    return block;
 }
 
@@ -42,20 +44,14 @@ static TreeBlock p_block(void) {
 static TreeDecls p_decls(void) {
    TreeDecls = 0; // set null by default
    TokenCode code = curr()->code;
-   // cases
+   // body
+   TreeDecl l0decl = p_decl()
+   if not ( ) return decls;
+
+   TreeDecls l1decls = p_decls();
+   decls = t_decls_decl(l0decl, l1decls);
+
    
-   switch (code) {
-      case TOK_decl: {
-         TreeDecl l0decl = p_decl();
-         TreeDecls l1decls = p_decls();
-         decls = t_decls_decl(l0decl, l1decls);
-         break;
-      }
-
-      default:
-         break;
-   }   
-
    return decls;
 }
 
@@ -74,6 +70,7 @@ static TreeDecl p_decl(void) {
    eat(';');
    decl = t_decl_type(l0type);
 
+   
    return decl;
 }
 
@@ -91,6 +88,7 @@ static TreeType p_type(void) {
    TreeType_1 l1type_1 = p_type_1();
    type = t_type_basic(l0basic, l1type_1);
 
+   
    return type;
 }
 
@@ -106,7 +104,7 @@ static TreeType_1 p_type_1(void) {
    // cases
    
    switch (code) {
-      case '[': {
+      case TOK_[: {  
          eat('[');
          TreeNum l1num = p_num();
          eat(']');
@@ -119,6 +117,7 @@ static TreeType_1 p_type_1(void) {
          break;
    }   
 
+   
    return type_1;
 }
 
@@ -134,12 +133,12 @@ static TreeBasic p_basic(void) {
    // cases
    
    switch (code) {
-      case TOK_int: {
+      case TOK_int: {  
          eat(TOK_int);
          basic = t_basic_();
          break;
       }
-      case TOK_float: {
+      case TOK_float: {  
          eat(TOK_float);
          basic = t_basic_();
          break;
@@ -149,6 +148,7 @@ static TreeBasic p_basic(void) {
          break;
    }   
 
+   
    return basic;
 }
 
@@ -161,20 +161,14 @@ static TreeBasic p_basic(void) {
 static TreeStmts p_stmts(void) {
    TreeStmts = 0; // set null by default
    TokenCode code = curr()->code;
-   // cases
+   // body
+   TreeStmt l0stmt = p_stmt()
+   if not ( ) return stmts;
+
+   TreeStmts l1stmts = p_stmts();
+   stmts = t_stmts_stmt(l0stmt, l1stmts);
+
    
-   switch (code) {
-      case TOK_stmt: {
-         TreeStmt l0stmt = p_stmt();
-         TreeStmts l1stmts = p_stmts();
-         stmts = t_stmts_stmt(l0stmt, l1stmts);
-         break;
-      }
-
-      default:
-         break;
-   }   
-
    return stmts;
 }
 
@@ -190,7 +184,7 @@ static TreeStmt p_stmt(void) {
    // cases
    
    switch (code) {
-      case TOK_loc: {
+      case TOK_id: {  //===== REDUCED TOK_loc
          TreeLoc l0loc = p_loc();
          eat('=');
          TreeBool l2bool = p_bool();
@@ -198,7 +192,7 @@ static TreeStmt p_stmt(void) {
          stmt = t_stmt_loc(l0loc, l2bool);
          break;
       }
-      case TOK_if: {
+      case TOK_if: {  
          eat(TOK_if);
          eat('(');
          TreeBool l2bool = p_bool();
@@ -207,7 +201,7 @@ static TreeStmt p_stmt(void) {
          stmt = t_stmt_bool(l2bool, l4stmt);
          break;
       }
-      case TOK_if: {
+      case TOK_if: {  
          eat(TOK_if);
          eat('(');
          TreeBool l2bool = p_bool();
@@ -218,7 +212,7 @@ static TreeStmt p_stmt(void) {
          stmt = t_stmt_bool(l2bool, l4stmt, l6stmt);
          break;
       }
-      case TOK_while: {
+      case TOK_while: {  
          eat(TOK_while);
          eat('(');
          TreeBool l2bool = p_bool();
@@ -227,7 +221,7 @@ static TreeStmt p_stmt(void) {
          stmt = t_stmt_bool(l2bool, l4stmt);
          break;
       }
-      case TOK_do: {
+      case TOK_do: {  
          eat(TOK_do);
          TreeStmt l1stmt = p_stmt();
          eat(TOK_while);
@@ -238,25 +232,25 @@ static TreeStmt p_stmt(void) {
          stmt = t_stmt_stmt(l1stmt, l4bool);
          break;
       }
-      case TOK_break: {
+      case TOK_break: {  
          eat(TOK_break);
          eat(';');
          stmt = t_stmt_();
          break;
       }
-      case TOK_block: {
+      case '{': {  //===== REDUCED TOK_block
          TreeBlock l0block = p_block();
          stmt = t_stmt_block(l0block);
          break;
       }
-      case TOK_read: {
+      case TOK_read: {  
          eat(TOK_read);
          TreeLoc l1loc = p_loc();
          eat(';');
          stmt = t_stmt_loc(l1loc);
          break;
       }
-      case TOK_write: {
+      case TOK_write: {  
          eat(TOK_write);
          TreeBool l1bool = p_bool();
          eat(';');
@@ -268,6 +262,7 @@ static TreeStmt p_stmt(void) {
          break;
    }   
 
+   
    return stmt;
 }
 
@@ -285,6 +280,7 @@ static TreeLoc p_loc(void) {
    TreeLoc_1 l1loc_1 = p_loc_1();
    loc = t_loc_loc_1(l1loc_1);
 
+   
    return loc;
 }
 
@@ -300,7 +296,7 @@ static TreeLoc_1 p_loc_1(void) {
    // cases
    
    switch (code) {
-      case '[': {
+      case TOK_[: {  
          eat('[');
          TreeBool l1bool = p_bool();
          eat(']');
@@ -313,6 +309,7 @@ static TreeLoc_1 p_loc_1(void) {
          break;
    }   
 
+   
    return loc_1;
 }
 
@@ -330,6 +327,7 @@ static TreeBool p_bool(void) {
    TreeBool_1 l1bool_1 = p_bool_1();
    bool = t_bool_join(l0join, l1bool_1);
 
+   
    return bool;
 }
 
@@ -345,7 +343,7 @@ static TreeBool_1 p_bool_1(void) {
    // cases
    
    switch (code) {
-      case TOK_OR: {
+      case TOK_OR: {  
          eat(TOK_OR);
          TreeJoin l1join = p_join();
          TreeBool_1 l2bool_1 = p_bool_1();
@@ -357,6 +355,7 @@ static TreeBool_1 p_bool_1(void) {
          break;
    }   
 
+   
    return bool_1;
 }
 
@@ -374,6 +373,7 @@ static TreeJoin p_join(void) {
    TreeJoin_1 l1join_1 = p_join_1();
    join = t_join_equality(l0equality, l1join_1);
 
+   
    return join;
 }
 
@@ -389,7 +389,7 @@ static TreeJoin_1 p_join_1(void) {
    // cases
    
    switch (code) {
-      case TOK_AND: {
+      case TOK_AND: {  
          eat(TOK_AND);
          TreeEquality l1equality = p_equality();
          TreeJoin_1 l2join_1 = p_join_1();
@@ -401,6 +401,7 @@ static TreeJoin_1 p_join_1(void) {
          break;
    }   
 
+   
    return join_1;
 }
 
@@ -418,6 +419,7 @@ static TreeEquality p_equality(void) {
    TreeEquality_1 l1equality_1 = p_equality_1();
    equality = t_equality_rel(l0rel, l1equality_1);
 
+   
    return equality;
 }
 
@@ -433,14 +435,14 @@ static TreeEquality_1 p_equality_1(void) {
    // cases
    
    switch (code) {
-      case TOK_EQ: {
+      case TOK_EQ: {  
          eat(TOK_EQ);
          TreeRel l1rel = p_rel();
          TreeEquality_1 l2equality_1 = p_equality_1();
          equality_1 = t_equality_1_rel(l1rel, l2equality_1);
          break;
       }
-      case TOK_NE: {
+      case TOK_NE: {  
          eat(TOK_NE);
          TreeRel l1rel = p_rel();
          TreeEquality_1 l2equality_1 = p_equality_1();
@@ -452,6 +454,7 @@ static TreeEquality_1 p_equality_1(void) {
          break;
    }   
 
+   
    return equality_1;
 }
 
@@ -467,25 +470,25 @@ static TreeRel p_rel(void) {
    // cases
    TreeExpr l0expr = p_expr(); // common
    switch (code) {
-      case '<': {
+      case TOK_<: {  
          eat('<');
          TreeExpr l1expr = p_expr();
          rel = t_rel_expr(l0expr, l1expr);
          break;
       }
-      case TOK_LE: {
+      case TOK_LE: {  
          eat(TOK_LE);
          TreeExpr l1expr = p_expr();
          rel = t_rel_expr(l0expr, l1expr);
          break;
       }
-      case TOK_GE: {
+      case TOK_GE: {  
          eat(TOK_GE);
          TreeExpr l1expr = p_expr();
          rel = t_rel_expr(l0expr, l1expr);
          break;
       }
-      case '>': {
+      case TOK_>: {  
          eat('>');
          TreeExpr l1expr = p_expr();
          rel = t_rel_expr(l0expr, l1expr);
@@ -497,6 +500,7 @@ static TreeRel p_rel(void) {
          break;
    }   
 
+   
    return rel;
 }
 
@@ -514,6 +518,7 @@ static TreeExpr p_expr(void) {
    TreeExpr_1 l1expr_1 = p_expr_1();
    expr = t_expr_term(l0term, l1expr_1);
 
+   
    return expr;
 }
 
@@ -529,14 +534,14 @@ static TreeExpr_1 p_expr_1(void) {
    // cases
    
    switch (code) {
-      case '+': {
+      case TOK_+: {  
          eat('+');
          TreeTerm l1term = p_term();
          TreeExpr_1 l2expr_1 = p_expr_1();
          expr_1 = t_expr_1_term(l1term, l2expr_1);
          break;
       }
-      case '-': {
+      case TOK_-: {  
          eat('-');
          TreeTerm l1term = p_term();
          TreeExpr_1 l2expr_1 = p_expr_1();
@@ -548,6 +553,7 @@ static TreeExpr_1 p_expr_1(void) {
          break;
    }   
 
+   
    return expr_1;
 }
 
@@ -565,6 +571,7 @@ static TreeTerm p_term(void) {
    TreeTerm_1 l1term_1 = p_term_1();
    term = t_term_unary(l0unary, l1term_1);
 
+   
    return term;
 }
 
@@ -580,14 +587,14 @@ static TreeTerm_1 p_term_1(void) {
    // cases
    
    switch (code) {
-      case '*': {
+      case TOK_*: {  
          eat('*');
          TreeUnary l1unary = p_unary();
          TreeTerm_1 l2term_1 = p_term_1();
          term_1 = t_term_1_unary(l1unary, l2term_1);
          break;
       }
-      case '/': {
+      case TOK_/: {  
          eat('/');
          TreeUnary l1unary = p_unary();
          TreeTerm_1 l2term_1 = p_term_1();
@@ -599,6 +606,7 @@ static TreeTerm_1 p_term_1(void) {
          break;
    }   
 
+   
    return term_1;
 }
 
@@ -614,19 +622,19 @@ static TreeUnary p_unary(void) {
    // cases
    
    switch (code) {
-      case '!': {
+      case TOK_!: {  
          eat('!');
          TreeUnary l1unary = p_unary();
          unary = t_unary_unary(l1unary);
          break;
       }
-      case '-': {
+      case TOK_-: {  
          eat('-');
          TreeUnary l1unary = p_unary();
          unary = t_unary_unary(l1unary);
          break;
       }
-      case TOK_factor: {
+      case '(': {  //===== REDUCED TOK_factor
          TreeFactor l0factor = p_factor();
          unary = t_unary_factor(l0factor);
          break;
@@ -636,6 +644,7 @@ static TreeUnary p_unary(void) {
          break;
    }   
 
+   
    return unary;
 }
 
@@ -651,34 +660,34 @@ static TreeFactor p_factor(void) {
    // cases
    
    switch (code) {
-      case '(': {
+      case TOK_(: {  
          eat('(');
          TreeBool l1bool = p_bool();
          eat(')');
          factor = t_factor_bool(l1bool);
          break;
       }
-      case TOK_loc: {
+      case TOK_id: {  //===== REDUCED TOK_loc
          TreeLoc l0loc = p_loc();
          factor = t_factor_loc(l0loc);
          break;
       }
-      case TOK_num: {
+      case TOK_num: {  
          TreeNum l0num = p_num();
          factor = t_factor_();
          break;
       }
-      case TOK_real: {
+      case TOK_real: {  
          TreeReal l0real = p_real();
          factor = t_factor_();
          break;
       }
-      case TOK_true: {
+      case TOK_true: {  
          eat(TOK_true);
          factor = t_factor_();
          break;
       }
-      case TOK_false: {
+      case TOK_false: {  
          eat(TOK_false);
          factor = t_factor_();
          break;
@@ -688,6 +697,7 @@ static TreeFactor p_factor(void) {
          break;
    }   
 
+   
    return factor;
 }
 

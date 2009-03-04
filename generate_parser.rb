@@ -39,9 +39,9 @@ end
 
 def reduce_tok(tok)
    return tok if not $grammar.has_key? tok
-   
-   tok 
+   return reduce_tok($grammar[tok][0].first)
 end
+
 def eater(tok,i)
   str = ""
   if literal?(tok)
@@ -62,10 +62,18 @@ def caser(rule, prod, arg0=nil)
   args = prod.each_with_index.map { |p,i| lvar(p,i) if rule?(p) }.compact
   args.unshift(arg0) if arg0
   
-  cas = "TOK_#{sym(prod.first)}"
+  cas = "TOK_#{ sym(prod.first) }"
   cas = "#{prod.first}" if sym(prod.first).length == 1
 
-  return """      case #{cas}: {
+  if rule? prod.first
+    nonterm = "//===== REDUCED #{cas}" 
+    rtok = reduce_tok(sym(prod.first))
+    cas = "TOK_#{ rtok }"
+    cas = "'#{rtok}'" if rtok.length == 1
+  end
+
+
+  return """      case #{cas}: {  #{nonterm}
          #{ toks*";\n#{$sp*3}" };
          #{rule} = #{tp_name(rule,prod)}(#{args*', '});
          break;
@@ -76,7 +84,23 @@ def functer(rule, prods)
   err_parse = prods.last.empty? ? "" : "#{$sp*3}error_parse(\"#{rule}\");\n"
   default = "#{$sp2}default:\n#{err_parse}#{$sp*3}break;"
   
-  if prods.length > 1
+  if prods.length==2 and prods.last.empty? and rule? prods[0].first
+    # Special eps production for one case
+    toks = prods.first.each_with_index.map { |p,i| eater(p,i) }
+    args = prods[0].each_with_index.map{ |p,i| lvar(p,i) if rule?(p) }.compact
+    body = <<-BODY
+   // body
+   #{ toks[0] }
+   
+   // check if we have next production
+   if ( #{lvar(prods[0].first,0)} == TOK_ERROR ) 
+      return #{rule};
+
+   #{ toks[1..-1]*";\n#{$sp}" };
+   #{rule} = #{tp_name(rule,prods.first)}(#{args*', '});
+   BODY
+
+  elsif prods.length > 1 
     cmn = prods.map{|p| rule?(p[0]) and (p.first==prods[0][0]) }
     cmn = !(cmn.include? false)
     if cmn
@@ -94,14 +118,14 @@ def functer(rule, prods)
 #{default}
    }   
    BODY
-  elsif prods.length == 1
+  else
     toks = prods.first.each_with_index.map { |p,i| eater(p,i) }
     args = prods[0].each_with_index.map{ |p,i| lvar(p,i) if rule?(p) }.compact
     body = <<-BODY
    // body
    #{ toks*";\n#{$sp}" };
    #{rule} = #{tp_name(rule,prods.first)}(#{args*', '});
-BODY
+   BODY
   end
   
   return <<-FUNC
@@ -114,6 +138,7 @@ static Tree#{rule.capitalize} p_#{rule}(void) {
    Tree#{rule.capitalize} = 0; // set null by default
    TokenCode code = curr()->code;
 #{body}
+   
    return #{rule};
 }
 
