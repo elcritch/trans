@@ -67,7 +67,7 @@ def caser(rule, prod, arg0=nil)
 
   if rule? prod.first
     nonterm = "//===== REDUCED #{cas}" 
-    rtok = reduce_tok(sym(prod.first))
+    rtok = sym(reduce_tok(sym(prod.first)))
     cas = "TOK_#{ rtok }"
     cas = "'#{rtok}'" if rtok.length == 1
   end
@@ -93,7 +93,7 @@ def functer(rule, prods)
    #{ toks[0] }
    
    // check if we have next production
-   if ( #{lvar(prods[0].first,0)} == TOK_ERROR ) 
+   if ( #{lvar(prods[0].first,0)} == 0 ) 
       return #{rule};
 
    #{ toks[1..-1]*";\n#{$sp}" };
