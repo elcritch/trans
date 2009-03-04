@@ -11,9 +11,9 @@ decls      : decl decls
 decl       : type id ';'
 
 
-type       : basic type__
+type       : basic type_1
 
-type__     : '[' num ']' type__
+type_1     : '[' num ']' type_1
            |  
 
 basic      : 'int'
@@ -35,25 +35,25 @@ stmt       : loc '=' bool ';'
            | 'write' bool ';'
 
 
-loc        : id loc__
+loc        : id loc_1
 
-loc__      : '[' bool ']' loc__
+loc_1      : '[' bool ']' loc_1
            |  
 
-bool       : join bool__
+bool       : join bool_1
 
-bool__     : '||' join bool__
+bool_1     : '||' join bool_1
            |  
 
-join       : equality join__
+join       : equality join_1
 
-join__     : '&&' equality join__
+join_1     : '&&' equality join_1
            |  
 
-equality   : rel equality__
+equality   : rel equality_1
 
-equality__ : '==' rel equality__
-           | '!=' rel equality__
+equality_1 : '==' rel equality_1
+           | '!=' rel equality_1
            |  
 
 rel        : expr '<' expr
@@ -63,16 +63,16 @@ rel        : expr '<' expr
            | expr
 
 
-expr       : term expr__
+expr       : term expr_1
 
-expr__     : '+' term expr__
-           | '-' term expr__
+expr_1     : '+' term expr_1
+           | '-' term expr_1
            |  
 
-term       : unary term__
+term       : unary term_1
 
-term__     : '*' unary term__
-           | '/' unary term__
+term_1     : '*' unary term_1
+           | '/' unary term_1
            |  
 
 unary      : '!' unary

@@ -1,16 +1,16 @@
 #!/usr/bin/env ruby
 
-grammar = Hash.new(nil)
+$grammar = Hash.new(nil)
 gram = []
 $sp = "   "
 $sp2 = $sp*2
 
-def term?(tok)
+def literal?(tok)
   return (tok =~ /^'.+'$/) != nil
 end
 
 def rule?(tok)
-  return !term?(tok)
+  return $grammar.has_key? tok
 end
 
 def sym(tok)
@@ -29,13 +29,22 @@ def sym(tok)
 end
 
 def tp_name(rule, prod)
-   tok = prod.collect{ |p| sym(p) if rule?(p) }.compact.first 
-   return "t_#{rule.gsub(/__/,'')}_#{tok}"
+   tok = prod.map{ |p| sym(p) if rule?(p) }.compact.first 
+   return "t_#{rule.gsub(/__/,'').downcase}_#{tok}"
 end
 
+def lvar(tok)
+   return "l#{tok}"
+end
+
+def reduce_tok(tok)
+   return tok if not $grammar.has_key? tok
+   
+   tok 
+end
 def eater(tok)
   str = ""
-  if term?(tok)
+  if literal?(tok)
     tk = sym(tok)
     if tk.length == 1
       str = "eat('#{tk}')" 
@@ -43,14 +52,14 @@ def eater(tok)
       str = "eat(TOK_#{tk})"
     end
   else
-    str = "Tree#{tok.capitalize} = p_#{tok}()"
+    str = "Tree#{tok.capitalize} #{lvar(tok)} = p_#{tok}()"
   end
   return str
 end
 
 def caser(rule, prod)
-  toks = prod.collect { |p| eater(p) }
-  args = prod.collect { |p| p if rule?(p) }.compact
+  toks = prod.map { |p| eater(p) }
+  args = prod.map { |p| lvar(p) if rule?(p) }.compact
   cas = "TOK_#{sym(prod.first)}"
   cas = "#{prod.first}" if sym(prod.first).length == 1
 
@@ -64,19 +73,25 @@ end
 def functer(rule, prods)
   err_parse = prods.last.empty? ? "" : "#{$sp*3}error_parse(\"#{rule}\");\n"
   default = "#{$sp2}default:\n#{err_parse}#{$sp*3}break;"
+  
   if prods.length > 1
-    body = <<-BODY
-   
+    cmn = prods.map{|p| rule?(p[0]) and (p.first==prods[0][0]) }
+    cmn = !(cmn.include? false)
+    cmnf = "#{eater prods[0].first}; // common" if cmn
+    prods = prods.map{ |p|  p[1..-1] }
+    prods[-1] = [] if not prods.last
+    
+    body = <<-BODY   
    // cases
+   #{cmnf}
    switch (code) {
-#{ prods.collect {|p| caser(rule, p) if not p.empty? }*"\n" }
+#{ prods.map {|p| caser(rule, p) if not p.empty? }*"\n" }
 #{default}
    }   
    BODY
   elsif prods.length == 1
-    toks = prods.first.collect { |p| eater(p) }
-    args = prods.first.collect { |p| p if rule?(p) }.compact
-    
+    toks = prods.first.map { |p| eater(p) }
+    args = prods.first.map { |p| lvar(p) if rule?(p) }.compact
     body = <<-BODY
    // body
    #{ toks*";\n#{$sp}" };
@@ -85,10 +100,10 @@ BODY
   end
   
   return <<-FUNC
-/** 
-   #{rule.capitalize}
+/**
+==================== #{(rule.capitalize+' ').ljust(50,'=')}
    Grammar:
-      #{rule} : #{prods.collect { |p| p*' '}*" | "} #{'e'if prods.last.empty?}
+      #{rule} : #{prods.map { |p| p*' '}*" | "} #{'e'if prods.last.empty?}
 */
 static Tree#{rule.capitalize} p_#{rule}(void) {
    Tree#{rule.capitalize} = 0; // set null by default
@@ -98,24 +113,23 @@ static Tree#{rule.capitalize} p_#{rule}(void) {
 }
 
 
-
    FUNC
 end
 
 
 File.open("grammar-right.txt", "r") do |fl|
   $/="\n\n"
-  coll = fl.collect {|g| g.split(':') }
+  coll = fl.map {|g| g.split(':') }
 
   coll.each do |prod| 
     # puts "LINE: '#{prod.inspect}'"
     rule = prod.shift.strip
-    prods = prod.last ? prod.last.split(/\s+\|\s+/).collect{ |p| p.split } : []
+    prods = prod.last ? prod.last.split(/\s+\|/).map{ |p| p.split } : []
     # puts "rule: #{rule.inspect}"
     # puts "prods:\t #{prods.inspect}"
     # puts
     if not rule.empty?
-      grammar[rule] = prods 
+      $grammar[rule] = prods 
       gram << [rule, prods]
     end
   end

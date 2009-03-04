@@ -36,8 +36,6 @@ def process():
         prods = grammar[rule]
         rule_ = rule+PostFix
         
-        # for 
-        
         # eliminate immediate left recursion
         leftrec = [ p for p in prods if p[0]==rule]
         if leftrec:
@@ -48,6 +46,9 @@ def process():
         else:
             right[rule] = grammar[rule]
             
+    # left factor grammar
+    # for rule, prods in right.items():
+        
         
     parse("grammar.txt")
 
