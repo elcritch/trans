@@ -30,7 +30,7 @@ $(prog): $(objs)
 .PHONY: clean test
 
 clean::
-	rm -f $(gens) $(objs) *.d $(prog) .history
+	rm -f $(gens) $(objs) *.d $(prog) .history *.gch
 
 test: $(prog)
 	$(test)

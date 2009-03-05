@@ -75,7 +75,7 @@ def caser(rule, prod, arg0=nil)
 
   return """      case #{cas}: {  #{nonterm}
          #{ toks*";\n#{$sp*3}" };
-         #{rule} = #{tp_name(rule,prod)}(#{args*', '});
+         #{rule} = #{tp_name(rule,prod)}(code, #{args*', '});
          break;
       }"""
 end

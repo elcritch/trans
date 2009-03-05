@@ -19,7 +19,6 @@ static TreeProgram p_Program(void) {
    TreeBlock l0block = p_block();
    Program = t_program_block(l0block);
 
-   
    return Program;
 }
 
@@ -39,7 +38,6 @@ static TreeBlock p_block(void) {
    eat('}');
    block = t_block_decls(l1decls, l2stmts);
 
-   
    return block;
 }
 
@@ -61,8 +59,7 @@ static TreeDecls p_decls(void) {
 
    TreeDecls l1decls = p_decls();
    decls = t_decls_decl(l0decl, l1decls);
-
-   
+  
    return decls;
 }
 
@@ -81,7 +78,6 @@ static TreeDecl p_decl(void) {
    eat(';');
    decl = t_decl_type(l0type, l1id);
 
-   
    return decl;
 }
 
@@ -98,7 +94,6 @@ static TreeType p_type(void) {
    TreeBasic l0basic = p_basic();
    TreeType_1 l1type_1 = p_type_1();
    type = t_type_basic(l0basic, l1type_1);
-
    
    return type;
 }
@@ -367,8 +362,7 @@ static TreeBool_1 p_bool_1(void) {
 
       default:
          break;
-   }   
-
+   }
    
    return bool_1;
 }
@@ -487,31 +481,31 @@ static TreeRel p_rel(void) {
       case '<': {  
          eat('<');
          TreeExpr l1expr = p_expr();
-         rel = t_rel_expr(l1expr);
+         rel = t_rel(code, l0expr, l1expr);
          break;
       }
       case TOK_LE: {  
          eat(TOK_LE);
          TreeExpr l1expr = p_expr();
-         rel = t_rel_LE(l1expr);
+         rel = t_rel(code, l0expr, l1expr);
          break;
       }
       case TOK_GE: {  
          eat(TOK_GE);
          TreeExpr l1expr = p_expr();
-         rel = t_rel_GE(l1expr);
+         rel = t_rel(code, l0expr, l1expr);
          break;
       }
       case '>': {  
          eat('>');
          TreeExpr l1expr = p_expr();
-         rel = t_rel_expr(l1expr);
+         rel = t_rel(code, l0expr, l1expr);
          break;
       }
 
       default:
-         error_parse("rel");
-         break;
+		rel = t_rel(0, l0expr, NULL);
+			break;
    }   
 
    
@@ -552,14 +546,14 @@ static TreeExpr_1 p_expr_1(void) {
          eat('+');
          TreeTerm l1term = p_term();
          TreeExpr_1 l2expr_1 = p_expr_1();
-         expr_1 = t_expr_1_term(l1term, l2expr_1);
+         expr_1 = t_expr_1_term(code, l1term, l2expr_1);
          break;
       }
       case '-': {  
          eat('-');
          TreeTerm l1term = p_term();
          TreeExpr_1 l2expr_1 = p_expr_1();
-         expr_1 = t_expr_1_term(l1term, l2expr_1);
+         expr_1 = t_expr_1_term(code, l1term, l2expr_1);
          break;
       }
 
@@ -605,14 +599,14 @@ static TreeTerm_1 p_term_1(void) {
          eat('*');
          TreeUnary l1unary = p_unary();
          TreeTerm_1 l2term_1 = p_term_1();
-         term_1 = t_term_1_unary(l1unary, l2term_1);
+         term_1 = t_term_1_unary(code, l1unary, l2term_1);
          break;
       }
       case '/': {  
          eat('/');
          TreeUnary l1unary = p_unary();
          TreeTerm_1 l2term_1 = p_term_1();
-         term_1 = t_term_1_unary(l1unary, l2term_1);
+         term_1 = t_term_1_unary(code, l1unary, l2term_1);
          break;
       }
 
@@ -639,13 +633,13 @@ static TreeUnary p_unary(void) {
       case '!': {  
          eat('!');
          TreeUnary l1unary = p_unary();
-         unary = t_unary_unary(l1unary);
+         unary = t_unary_unary(code, l1unary);
          break;
       }
       case '-': {  
          eat('-');
          TreeUnary l1unary = p_unary();
-         unary = t_unary_unary(l1unary);
+         unary = t_unary_unary(code, l1unary);
          break;
       }
       case '(': {  //===== REDUCED TOK_factor
