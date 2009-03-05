@@ -29,18 +29,18 @@ def sym(tok)
 end
 
 def tp_name(rule, prod)
-   tok = prod.map{ |p| sym(p) if rule?(p) }.compact.first 
-   return "t_#{rule.gsub(/__/,'').downcase}_#{tok}"
+  tok = prod.map{ |p| sym(p) if sym(p).length>1 }.compact.first 
+  return "t_#{rule.gsub(/__/,'').downcase}_#{tok}"
 end
 
 def lvar(tok,i)
-   return "l#{i}#{tok}"
+  return "l#{i}#{tok}"
 end
 
 def reduce_tok(tok)
-   return tok if not $grammar.has_key? tok
-   return reduce_tok($grammar[tok][0].first)
-end
+  return tok if not $grammar.has_key? tok
+  return reduce_tok($grammar[tok][0].first)
+end 
 
 def eater(tok,i)
   str = ""
@@ -84,10 +84,11 @@ def functer(rule, prods)
   err_parse = prods.last.empty? ? "" : "#{$sp*3}error_parse(\"#{rule}\");\n"
   default = "#{$sp2}default:\n#{err_parse}#{$sp*3}break;"
   
+  ############################################
+  # Special eps production for one case
   if prods.length==2 and prods.last.empty? and rule? prods[0].first
-    # Special eps production for one case
     toks = prods.first.each_with_index.map { |p,i| eater(p,i) }
-    args = prods[0].each_with_index.map{ |p,i| lvar(p,i) if rule?(p) }.compact
+    args = prods[0].each_with_index.map{ |p,i| lvar(p,i) if ! literal?(p) }.compact
     body = <<-BODY
    // body
    #{ toks[0] }
@@ -100,6 +101,7 @@ def functer(rule, prods)
    #{rule} = #{tp_name(rule,prods.first)}(#{args*', '});
    BODY
 
+  ############################################
   elsif prods.length > 1 
     cmn = prods.map{|p| rule?(p[0]) and (p.first==prods[0][0]) }
     cmn = !(cmn.include? false)
@@ -114,13 +116,15 @@ def functer(rule, prods)
    // cases
    #{cmnf}
    switch (code) {
-#{ prods.map {|p| caser(rule, p, arg0) if not p.empty? }*"\n" }
+#{ prods.map {|p| caser(rule, p) if not p.empty? }*"\n" }
 #{default}
    }   
    BODY
+
+  ############################################
   else
     toks = prods.first.each_with_index.map { |p,i| eater(p,i) }
-    args = prods[0].each_with_index.map{ |p,i| lvar(p,i) if rule?(p) }.compact
+    args = prods[0].each_with_index.map{ |p,i| lvar(p,i) if ! literal?(p) }.compact
     body = <<-BODY
    // body
    #{ toks*";\n#{$sp}" };
@@ -135,7 +139,7 @@ def functer(rule, prods)
       #{rule} : #{prods.map { |p| p*' '}*" | "} #{'e'if prods.last.empty?}
 */
 static Tree#{rule.capitalize} p_#{rule}(void) {
-   Tree#{rule.capitalize} = 0; // set null by default
+   Tree#{rule.capitalize} #{rule} = 0; // set null by default
    TokenCode code = curr()->code;
 #{body}
    

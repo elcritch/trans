@@ -5,7 +5,7 @@ Grammar:
       Program : block 
 */
 static TreeProgram p_Program(void) {
-   TreeProgram = 0; // set null by default
+   TreeProgram Program = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeBlock l0block = p_block();
@@ -22,7 +22,7 @@ static TreeProgram p_Program(void) {
       block : '{' decls stmts '}' 
 */
 static TreeBlock p_block(void) {
-   TreeBlock = 0; // set null by default
+   TreeBlock block = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    eat('{');
@@ -42,7 +42,7 @@ static TreeBlock p_block(void) {
       decls : decl decls |  e
 */
 static TreeDecls p_decls(void) {
-   TreeDecls = 0; // set null by default
+   TreeDecls decls = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeDecl l0decl = p_decl()
@@ -65,13 +65,13 @@ static TreeDecls p_decls(void) {
       decl : type id ';' 
 */
 static TreeDecl p_decl(void) {
-   TreeDecl = 0; // set null by default
+   TreeDecl decl = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeType l0type = p_type();
    TreeId l1id = p_id();
    eat(';');
-   decl = t_decl_type(l0type);
+   decl = t_decl_type(l0type, l1id);
 
    
    return decl;
@@ -84,7 +84,7 @@ static TreeDecl p_decl(void) {
       type : basic type_1 
 */
 static TreeType p_type(void) {
-   TreeType = 0; // set null by default
+   TreeType type = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeBasic l0basic = p_basic();
@@ -102,7 +102,7 @@ static TreeType p_type(void) {
       type_1 : '[' num ']' type_1 |  e
 */
 static TreeType_1 p_type_1(void) {
-   TreeType_1 = 0; // set null by default
+   TreeType_1 type_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -112,7 +112,7 @@ static TreeType_1 p_type_1(void) {
          TreeNum l1num = p_num();
          eat(']');
          TreeType_1 l3type_1 = p_type_1();
-         type_1 = t_type_1_type_1(l3type_1);
+         type_1 = t_type_1_num(l3type_1);
          break;
       }
 
@@ -131,19 +131,19 @@ static TreeType_1 p_type_1(void) {
       basic : 'int' | 'float' 
 */
 static TreeBasic p_basic(void) {
-   TreeBasic = 0; // set null by default
+   TreeBasic basic = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
    switch (code) {
       case TOK_int: {  
          eat(TOK_int);
-         basic = t_basic_();
+         basic = t_basic_int();
          break;
       }
       case TOK_float: {  
          eat(TOK_float);
-         basic = t_basic_();
+         basic = t_basic_float();
          break;
       }
       default:
@@ -162,7 +162,7 @@ static TreeBasic p_basic(void) {
       stmts : stmt stmts |  e
 */
 static TreeStmts p_stmts(void) {
-   TreeStmts = 0; // set null by default
+   TreeStmts stmts = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeStmt l0stmt = p_stmt()
@@ -185,7 +185,7 @@ static TreeStmts p_stmts(void) {
       stmt : loc '=' bool ';' | 'if' '(' bool ')' stmt | 'if' '(' bool ')' stmt 'else' stmt | 'while' '(' bool ')' stmt | 'do' stmt 'while' '(' bool ')' ';' | 'break' ';' | block | 'read' loc ';' | 'write' bool ';' 
 */
 static TreeStmt p_stmt(void) {
-   TreeStmt = 0; // set null by default
+   TreeStmt stmt = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -204,7 +204,7 @@ static TreeStmt p_stmt(void) {
          TreeBool l2bool = p_bool();
          eat(')');
          TreeStmt l4stmt = p_stmt();
-         stmt = t_stmt_bool(l2bool, l4stmt);
+         stmt = t_stmt_if(l2bool, l4stmt);
          break;
       }
       case TOK_if: {  
@@ -215,7 +215,7 @@ static TreeStmt p_stmt(void) {
          TreeStmt l4stmt = p_stmt();
          eat(TOK_else);
          TreeStmt l6stmt = p_stmt();
-         stmt = t_stmt_bool(l2bool, l4stmt, l6stmt);
+         stmt = t_stmt_if(l2bool, l4stmt, l6stmt);
          break;
       }
       case TOK_while: {  
@@ -224,7 +224,7 @@ static TreeStmt p_stmt(void) {
          TreeBool l2bool = p_bool();
          eat(')');
          TreeStmt l4stmt = p_stmt();
-         stmt = t_stmt_bool(l2bool, l4stmt);
+         stmt = t_stmt_while(l2bool, l4stmt);
          break;
       }
       case TOK_do: {  
@@ -235,13 +235,13 @@ static TreeStmt p_stmt(void) {
          TreeBool l4bool = p_bool();
          eat(')');
          eat(';');
-         stmt = t_stmt_stmt(l1stmt, l4bool);
+         stmt = t_stmt_do(l1stmt, l4bool);
          break;
       }
       case TOK_break: {  
          eat(TOK_break);
          eat(';');
-         stmt = t_stmt_();
+         stmt = t_stmt_break();
          break;
       }
       case '{': {  //===== REDUCED TOK_block
@@ -253,14 +253,14 @@ static TreeStmt p_stmt(void) {
          eat(TOK_read);
          TreeLoc l1loc = p_loc();
          eat(';');
-         stmt = t_stmt_loc(l1loc);
+         stmt = t_stmt_read(l1loc);
          break;
       }
       case TOK_write: {  
          eat(TOK_write);
          TreeBool l1bool = p_bool();
          eat(';');
-         stmt = t_stmt_bool(l1bool);
+         stmt = t_stmt_write(l1bool);
          break;
       }
       default:
@@ -279,12 +279,12 @@ static TreeStmt p_stmt(void) {
       loc : id loc_1 
 */
 static TreeLoc p_loc(void) {
-   TreeLoc = 0; // set null by default
+   TreeLoc loc = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeId l0id = p_id();
    TreeLoc_1 l1loc_1 = p_loc_1();
-   loc = t_loc_loc_1(l1loc_1);
+   loc = t_loc_id(l0id, l1loc_1);
 
    
    return loc;
@@ -297,7 +297,7 @@ static TreeLoc p_loc(void) {
       loc_1 : '[' bool ']' loc_1 |  e
 */
 static TreeLoc_1 p_loc_1(void) {
-   TreeLoc_1 = 0; // set null by default
+   TreeLoc_1 loc_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -326,7 +326,7 @@ static TreeLoc_1 p_loc_1(void) {
       bool : join bool_1 
 */
 static TreeBool p_bool(void) {
-   TreeBool = 0; // set null by default
+   TreeBool bool = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeJoin l0join = p_join();
@@ -344,7 +344,7 @@ static TreeBool p_bool(void) {
       bool_1 : '||' join bool_1 |  e
 */
 static TreeBool_1 p_bool_1(void) {
-   TreeBool_1 = 0; // set null by default
+   TreeBool_1 bool_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -353,7 +353,7 @@ static TreeBool_1 p_bool_1(void) {
          eat(TOK_OR);
          TreeJoin l1join = p_join();
          TreeBool_1 l2bool_1 = p_bool_1();
-         bool_1 = t_bool_1_join(l1join, l2bool_1);
+         bool_1 = t_bool_1_OR(l1join, l2bool_1);
          break;
       }
 
@@ -372,7 +372,7 @@ static TreeBool_1 p_bool_1(void) {
       join : equality join_1 
 */
 static TreeJoin p_join(void) {
-   TreeJoin = 0; // set null by default
+   TreeJoin join = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeEquality l0equality = p_equality();
@@ -390,7 +390,7 @@ static TreeJoin p_join(void) {
       join_1 : '&&' equality join_1 |  e
 */
 static TreeJoin_1 p_join_1(void) {
-   TreeJoin_1 = 0; // set null by default
+   TreeJoin_1 join_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -399,7 +399,7 @@ static TreeJoin_1 p_join_1(void) {
          eat(TOK_AND);
          TreeEquality l1equality = p_equality();
          TreeJoin_1 l2join_1 = p_join_1();
-         join_1 = t_join_1_equality(l1equality, l2join_1);
+         join_1 = t_join_1_AND(l1equality, l2join_1);
          break;
       }
 
@@ -418,7 +418,7 @@ static TreeJoin_1 p_join_1(void) {
       equality : rel equality_1 
 */
 static TreeEquality p_equality(void) {
-   TreeEquality = 0; // set null by default
+   TreeEquality equality = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeRel l0rel = p_rel();
@@ -436,7 +436,7 @@ static TreeEquality p_equality(void) {
       equality_1 : '==' rel equality_1 | '!=' rel equality_1 |  e
 */
 static TreeEquality_1 p_equality_1(void) {
-   TreeEquality_1 = 0; // set null by default
+   TreeEquality_1 equality_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -445,14 +445,14 @@ static TreeEquality_1 p_equality_1(void) {
          eat(TOK_EQ);
          TreeRel l1rel = p_rel();
          TreeEquality_1 l2equality_1 = p_equality_1();
-         equality_1 = t_equality_1_rel(l1rel, l2equality_1);
+         equality_1 = t_equality_1_EQ(l1rel, l2equality_1);
          break;
       }
       case TOK_NE: {  
          eat(TOK_NE);
          TreeRel l1rel = p_rel();
          TreeEquality_1 l2equality_1 = p_equality_1();
-         equality_1 = t_equality_1_rel(l1rel, l2equality_1);
+         equality_1 = t_equality_1_NE(l1rel, l2equality_1);
          break;
       }
 
@@ -471,7 +471,7 @@ static TreeEquality_1 p_equality_1(void) {
       rel : '<' expr | '<=' expr | '>=' expr | '>' expr |  e
 */
 static TreeRel p_rel(void) {
-   TreeRel = 0; // set null by default
+   TreeRel rel = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    TreeExpr l0expr = p_expr(); // common
@@ -479,25 +479,25 @@ static TreeRel p_rel(void) {
       case '<': {  
          eat('<');
          TreeExpr l1expr = p_expr();
-         rel = t_rel_expr(l0expr, l1expr);
+         rel = t_rel_expr(l1expr);
          break;
       }
       case TOK_LE: {  
          eat(TOK_LE);
          TreeExpr l1expr = p_expr();
-         rel = t_rel_expr(l0expr, l1expr);
+         rel = t_rel_LE(l1expr);
          break;
       }
       case TOK_GE: {  
          eat(TOK_GE);
          TreeExpr l1expr = p_expr();
-         rel = t_rel_expr(l0expr, l1expr);
+         rel = t_rel_GE(l1expr);
          break;
       }
       case '>': {  
          eat('>');
          TreeExpr l1expr = p_expr();
-         rel = t_rel_expr(l0expr, l1expr);
+         rel = t_rel_expr(l1expr);
          break;
       }
 
@@ -517,7 +517,7 @@ static TreeRel p_rel(void) {
       expr : term expr_1 
 */
 static TreeExpr p_expr(void) {
-   TreeExpr = 0; // set null by default
+   TreeExpr expr = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeTerm l0term = p_term();
@@ -535,7 +535,7 @@ static TreeExpr p_expr(void) {
       expr_1 : '+' term expr_1 | '-' term expr_1 |  e
 */
 static TreeExpr_1 p_expr_1(void) {
-   TreeExpr_1 = 0; // set null by default
+   TreeExpr_1 expr_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -570,7 +570,7 @@ static TreeExpr_1 p_expr_1(void) {
       term : unary term_1 
 */
 static TreeTerm p_term(void) {
-   TreeTerm = 0; // set null by default
+   TreeTerm term = 0; // set null by default
    TokenCode code = curr()->code;
    // body
    TreeUnary l0unary = p_unary();
@@ -588,7 +588,7 @@ static TreeTerm p_term(void) {
       term_1 : '*' unary term_1 | '/' unary term_1 |  e
 */
 static TreeTerm_1 p_term_1(void) {
-   TreeTerm_1 = 0; // set null by default
+   TreeTerm_1 term_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -623,7 +623,7 @@ static TreeTerm_1 p_term_1(void) {
       unary : '!' unary | '-' unary | factor 
 */
 static TreeUnary p_unary(void) {
-   TreeUnary = 0; // set null by default
+   TreeUnary unary = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -661,7 +661,7 @@ static TreeUnary p_unary(void) {
       factor : '(' bool ')' | loc | num | real | 'true' | 'false' 
 */
 static TreeFactor p_factor(void) {
-   TreeFactor = 0; // set null by default
+   TreeFactor factor = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
    
@@ -680,22 +680,22 @@ static TreeFactor p_factor(void) {
       }
       case TOK_num: {  
          TreeNum l0num = p_num();
-         factor = t_factor_();
+         factor = t_factor_num();
          break;
       }
       case TOK_real: {  
          TreeReal l0real = p_real();
-         factor = t_factor_();
+         factor = t_factor_real();
          break;
       }
       case TOK_true: {  
          eat(TOK_true);
-         factor = t_factor_();
+         factor = t_factor_true();
          break;
       }
       case TOK_false: {  
          eat(TOK_false);
-         factor = t_factor_();
+         factor = t_factor_false();
          break;
       }
       default:
