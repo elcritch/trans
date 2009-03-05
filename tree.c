@@ -1,7 +1,9 @@
 #include "tree.h"
+#include <stdlib.h>
+#include "scanner/error.h"
 
 #define ALLOC(t)		  \
-  t v=malloc(sizeof(*v)); \
+  t v = malloc(sizeof(t)); \
   if (!v) ERR("malloc() failed")
 
 /**
@@ -35,7 +37,6 @@ extern TreeStmt t_stmt_break() {
 extern TreeBasic t_basic_float() {
   ALLOC(TreeBasic);
   v->code=TOK_float;
-  
   return v;
 }
 
@@ -50,27 +51,26 @@ extern TreeBasic t_basic_int() {
 // Block ["decls", "stmts"]
 extern TreeBlock t_block_decls(TreeDecls decls, TreeStmts stmts) {
   ALLOC(TreeBlock);
-  v->code=TOK_decls;
   v->decls = decls;
   v->stmts = stmts;
   return v;
 }
 
-// Bool ["join", "bool"]
-extern TreeBool t_bool_join(TreeJoin join, TreeBool bool) {
+// Bool ["join", "bool_1"]
+extern TreeBool t_bool_join(TreeJoin join, TreeBool_1 bool_1) {
   ALLOC(TreeBool);
   v->code=TOK_join;
   v->join = join;
-  v->bool = bool;
+  v->bool_1 = bool_1;
   return v;
 }
 
-// Bool_1 ["join", "bool"]
-extern TreeBool_1 t_bool_1_OR(TreeJoin join, TreeBool bool) {
+// Bool_1 ["join", "bool_1"]
+extern TreeBool_1 t_bool_1_OR(TreeJoin join, TreeBool_1 bool_1) {
   ALLOC(TreeBool_1);
   v->code=TOK_OR;
   v->join = join;
-  v->bool = bool;
+  v->bool_1 = bool_1;
   return v;
 }
 
@@ -92,48 +92,48 @@ extern TreeDecls t_decls_decl(TreeDecl decl, TreeDecls decls) {
   return v;
 }
 
-// Equality ["rel", "equality"]
-extern TreeEquality t_equality_rel(TreeRel rel, TreeEquality equality) {
+// Equality ["rel", "equality_1"]
+extern TreeEquality t_equality_rel(TreeRel rel, TreeEquality_1 equality_1) {
   ALLOC(TreeEquality);
   v->code=TOK_rel;
   v->rel = rel;
-  v->equality = equality;
+  v->equality_1 = equality_1;
   return v;
 }
 
-// Equality_1 ["rel", "equality"]
-extern TreeEquality_1 t_equality_1_EQ(TreeRel rel, TreeEquality equality) {
+// Equality_1 ["rel", "equality_1"]
+extern TreeEquality_1 t_equality_1_EQ(TreeRel rel, TreeEquality_1 equality_1) {
   ALLOC(TreeEquality_1);
   v->code=TOK_EQ;
   v->u.u_EQ.rel = rel;
-  v->u.u_EQ.equality = equality;
+  v->u.u_EQ.equality_1 = equality_1;
   return v;
 }
 
-// Equality_1 ["rel", "equality"]
-extern TreeEquality_1 t_equality_1_NE(TreeRel rel, TreeEquality equality) {
+// Equality_1 ["rel", "equality_1"]
+extern TreeEquality_1 t_equality_1_NE(TreeRel rel, TreeEquality_1 equality_1) {
   ALLOC(TreeEquality_1);
   v->code=TOK_NE;
   v->u.u_NE.rel = rel;
-  v->u.u_NE.equality = equality;
+  v->u.u_NE.equality_1 = equality_1;
   return v;
 }
 
-// Expr ["term", "expr"]
-extern TreeExpr t_expr_term(TreeTerm term, TreeExpr expr) {
+// Expr ["term", "expr_1"]
+extern TreeExpr t_expr_term(TreeTerm term, TreeExpr_1 expr_1) {
   ALLOC(TreeExpr);
   v->code=TOK_term;
   v->term = term;
-  v->expr = expr;
+  v->expr_1 = expr_1;
   return v;
 }
 
-// Expr_1 ["term", "expr"]
-extern TreeExpr_1 t_expr_1_term(TreeTerm term, TreeExpr expr) {
+// Expr_1 ["term", "expr_1"]
+extern TreeExpr_1 t_expr_1_term(TreeTerm term, TreeExpr_1 expr_1) {
   ALLOC(TreeExpr_1);
   v->code=TOK_term;
   v->term = term;
-  v->expr = expr;
+  v->expr_1 = expr_1;
   return v;
 }
 
@@ -185,39 +185,39 @@ extern TreeFactor t_factor_true() {
   return v;
 }
 
-// Join ["equality", "join"]
-extern TreeJoin t_join_equality(TreeEquality equality, TreeJoin join) {
+// Join ["equality", "join_1"]
+extern TreeJoin t_join_equality(TreeEquality equality, TreeJoin_1 join_1) {
   ALLOC(TreeJoin);
   v->code=TOK_equality;
   v->equality = equality;
-  v->join = join;
+  v->join_1 = join_1;
   return v;
 }
 
-// Join_1 ["equality", "join"]
-extern TreeJoin_1 t_join_1_AND(TreeEquality equality, TreeJoin join) {
+// Join_1 ["equality", "join_1"]
+extern TreeJoin_1 t_join_1_AND(TreeEquality equality, TreeJoin_1 join_1) {
   ALLOC(TreeJoin_1);
   v->code=TOK_AND;
   v->equality = equality;
-  v->join = join;
+  v->join_1 = join_1;
   return v;
 }
 
-// Loc ["id", "loc"]
-extern TreeLoc t_loc_id(TreeId id, TreeLoc loc) {
+// Loc ["id", "loc_1"]
+extern TreeLoc t_loc_id(TreeId id, TreeLoc_1 loc_1) {
   ALLOC(TreeLoc);
   v->code=TOK_id;
   v->id = id;
-  v->loc = loc;
+  v->loc_1 = loc_1;
   return v;
 }
 
-// Loc_1 ["bool", "loc"]
-extern TreeLoc_1 t_loc_1_bool(TreeBool bool, TreeLoc loc) {
+// Loc_1 ["bool", "loc_1"]
+extern TreeLoc_1 t_loc_1_bool(TreeBool bool, TreeLoc_1 loc_1) {
   ALLOC(TreeLoc_1);
   v->code=TOK_bool;
   v->bool = bool;
-  v->loc = loc;
+  v->loc_1 = loc_1;
   return v;
 }
 
@@ -340,38 +340,38 @@ extern TreeStmts t_stmts_stmt(TreeStmt stmt, TreeStmts stmts) {
   return v;
 }
 
-// Term ["unary", "term"]
-extern TreeTerm t_term_unary(TreeUnary unary, TreeTerm term) {
+// Term ["unary", "term_1"]
+extern TreeTerm t_term_unary(TreeUnary unary, TreeTerm_1 term_1) {
   ALLOC(TreeTerm);
   v->code=TOK_unary;
   v->unary = unary;
-  v->term = term;
+  v->term_1 = term_1;
   return v;
 }
 
-// Term_1 ["unary", "term"]
-extern TreeTerm_1 t_term_1_unary(TreeUnary unary, TreeTerm term) {
+// Term_1 ["unary", "term_1"]
+extern TreeTerm_1 t_term_1_unary(TreeUnary unary, TreeTerm_1 term_1) {
   ALLOC(TreeTerm_1);
   v->code=TOK_unary;
   v->unary = unary;
-  v->term = term;
+  v->term_1 = term_1;
   return v;
 }
 
-// Type ["basic", "type"]
-extern TreeType t_type_basic(TreeBasic basic, TreeType type) {
+// Type ["basic", "type_1"]
+extern TreeType t_type_basic(TreeBasic basic, TreeType_1 type_1) {
   ALLOC(TreeType);
   v->code=TOK_basic;
   v->basic = basic;
-  v->type = type;
+  v->type_1 = type_1;
   return v;
 }
 
-// Type_1 ["type"]
-extern TreeType_1 t_type_1_num(TreeType type) {
+// Type_1 ["type_1"]
+extern TreeType_1 t_type_1_num(TreeType_1 type_1) {
   ALLOC(TreeType_1);
   v->code=TOK_num;
-  v->type = type;
+  v->type_1 = type_1;
   return v;
 }
 

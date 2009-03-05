@@ -9,7 +9,7 @@ typedef enum {
     TOK_ID,
     TOK_LE,
     TOK_NE,
-    TOK_NUM,
+    TOK_num,
     TOK_OR,
     TOK_REAL,
     TOK_break,

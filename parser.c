@@ -1,4 +1,12 @@
-Grammar: 
+#include "tree.h"
+#include "parser.h"
+
+
+static TreeProgram parser(void) {
+	
+	return NULL;
+}
+
 /**
 ==================== Program ==========================================
    Grammar:

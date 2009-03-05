@@ -28,8 +28,9 @@ extern Tree#{names[0].capitalize} #{tname}(#{ args.map{|a| tree(a) }*", " }) {
 end
 
 def struct(name, args)
+  return "/* omitting empty rule: #{name} */" if args.nil? or args.empty?
   return """struct {
-      #{args.map{|a| tree(a) }*";\n      " }
+      #{args.map{|a| tree(a) }*";\n      " };
     } u_#{name};"""
 end
 
@@ -52,8 +53,6 @@ struct Tree#{rule.capitalize} {
   TokenCode code;
   #{args.first.last.map{|a| tree(a) }*";\n  " };
 };
-
-
 """
   end
 end
@@ -69,7 +68,7 @@ File.open("parser.c", "r") do |fl|
   cols = lines.map do |ln|
     ln.gsub!(/_\d/,"@")
     ln = ln.gsub(/\((.*)\);/,'')
-    ars = $1.split(/\s*,\s*/).map{ |a| a[2..-1].gsub('@','') }
+    ars = $1.split(/\s*,\s*/).map{ |a| a[2..-1].gsub('@','_1') }
 #   puts "ln: #{ars.inspect}"
 
     flds = ln.split('_')[1..-1].map{ |l| l.gsub('@','_1') }
@@ -84,6 +83,6 @@ File.open("parser.c", "r") do |fl|
 #    puts "base:","#{base.map{|k,v| "#{k}: #{v.inspect}" }*"\n"}"
   
 ###### print out tree.c functions to set unions from parser
-  cols.each{|col| functer(col[0..2],col.last, base[col[0]].length)}
-#    base.each{|k,v| union(k,v)}
+  # cols.each{|col| functer(col[0..2],col.last, base[col[0]].length)}
+  base.each{|k,v| union(k,v)}
 end
