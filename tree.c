@@ -296,7 +296,7 @@ extern TreeExpr t_expr_term(TreeTerm term, TreeExpr_1 expr_1) {
 // Expr_1 ["code", "term", "expr_1"]
 extern TreeExpr_1 t_expr_1_term(TokenCode code, TreeTerm term, TreeExpr_1 expr_1) {
   ALLOC(TreeExpr_1);
-    
+  v->code = code;
   v->term = term;
   v->expr_1 = expr_1;
   return v;
@@ -317,7 +317,7 @@ extern TreeTerm t_term_unary(TreeUnary unary, TreeTerm_1 term_1) {
 // Term_1 ["code", "unary", "term_1"]
 extern TreeTerm_1 t_term_1_unary(TokenCode code, TreeUnary unary, TreeTerm_1 term_1) {
   ALLOC(TreeTerm_1);
-    
+  v->code = code;
   v->unary = unary;
   v->term_1 = term_1;
   return v;

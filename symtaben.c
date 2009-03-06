@@ -26,3 +26,4 @@ extern SymtabEntry SymtabEntryNew(char *id, TreeType type) {
 	
 	return entry;
 }
+

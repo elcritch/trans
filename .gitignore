@@ -3,3 +3,4 @@
 *.gch
 .history
 print_parse
+scanner/scanner

@@ -200,6 +200,7 @@ struct TreeExpr {
 
 // Structure: expr_1 [["term", ["term", "expr_1"]]]
 struct TreeExpr_1 {
+  TokenCode code;
   TreeTerm term;
   TreeExpr_1 expr_1;
 };
@@ -212,6 +213,7 @@ struct TreeTerm {
 
 // Structure: term_1 [["unary", ["unary", "term_1"]]]
 struct TreeTerm_1 {
+  TokenCode code;
   TreeUnary unary;
   TreeTerm_1 term_1;
 };

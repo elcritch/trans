@@ -30,10 +30,6 @@ static TreeUnary p_unary(void) ;
 static TreeFactor p_factor(void) ;
 
 
-static TreeProgram parser(void) {
-	
-	return NULL;
-}
 
 /**
 ==================== Program ==========================================
