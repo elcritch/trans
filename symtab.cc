@@ -2,7 +2,9 @@
 #include <vector>
 
 #include "symtab.h"
-#include "error.h"
+#include "scanner/error.h"
+
+typedef struct SymtabEntry *SymtabEntry;
 
 using namespace std;
 
@@ -35,11 +37,13 @@ extern LINKAGE SymtabEntry SymTabGet(char* id) {
   return entry;
 }
 
-extern LINKAGE SymtabEntry SymTabPut(char* id) {
-  SymtabEntry entry;
+extern LINKAGE SymtabEntry SymTabPut(char* id, SymtabEntry entry) {
+  // SymtabEntry entry;
   if (symtab.empty())
     SymtabPush();
-  entry=SymtabEntryNew(id);
+  // entry=SymtabEntryNew(id);
   (*symtab.back())[id]=entry;
   return entry;
 }
+
+

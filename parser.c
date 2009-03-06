@@ -1,5 +1,32 @@
 #include "tree.h"
-#include "parser.h"
+#include "symtaben.h"
+#include "scanner/scanner.h"
+#include "scanner/token.h"
+
+static TreeProgram parser(void);
+static TreeBlock p_block(void) ;
+static TreeDecls p_decls(void) ;
+static TreeDecl p_decl(void) ;
+static TreeType p_type(void) ;
+static TreeType_1 p_type_1(void) ;
+static TreeBasic p_basic(void) ;
+static TreeStmts p_stmts(void) ;
+static TreeStmt p_stmt(void) ;
+static TreeLoc p_loc(void) ;
+static TreeLoc_1 p_loc_1(void) ;
+static TreeBool p_bool(void) ;
+static TreeBool_1 p_bool_1(void) ;
+static TreeJoin p_join(void) ;
+static TreeJoin_1 p_join_1(void) ;
+static TreeEquality p_equality(void) ;
+static TreeEquality_1 p_equality_1(void) ;
+static TreeRel p_rel(void) ;
+static TreeExpr p_expr(void) ;
+static TreeExpr_1 p_expr_1(void) ;
+static TreeTerm p_term(void) ;
+static TreeTerm_1 p_term_1(void) ;
+static TreeUnary p_unary(void) ;
+static TreeFactor p_factor(void) ;
 
 
 static TreeProgram parser(void) {
@@ -12,14 +39,9 @@ static TreeProgram parser(void) {
    Grammar:
       Program : block 
 */
-static TreeProgram p_Program(void) {
-   TreeProgram Program = 0; // set null by default
-   TokenCode code = curr()->code;
-   // body
-   TreeBlock l0block = p_block();
-   Program = t_program_block(l0block);
-
-   return Program;
+extern TreeBlock Program(void) {
+   TreeBlock block = p_block();
+   return block;
 }
 
 
@@ -30,7 +52,7 @@ static TreeProgram p_Program(void) {
 */
 static TreeBlock p_block(void) {
    TreeBlock block = 0; // set null by default
-   TokenCode code = curr()->code;
+
    // body
    eat('{');
    TreeDecls l1decls = p_decls();
@@ -51,12 +73,14 @@ static TreeDecls p_decls(void) {
    TreeDecls decls = 0; // set null by default
    TokenCode code = curr()->code;
    // body
-   TreeDecl l0decl = p_decl()
+	TreeDecl l0decl = p_decl();
    
-   // check if we have next production
-   if ( l0decl == 0 ) 
-      return decls;
-
+   // check if we have next production, return on zero
+   code = curr()->code;
+   if ( code != TOK_int || code != TOK_float  ) 
+      return t_decls_decl(l0decl, 0);
+	
+	// if found type then another type continue
    TreeDecls l1decls = p_decls();
    decls = t_decls_decl(l0decl, l1decls);
   
@@ -71,10 +95,19 @@ static TreeDecls p_decls(void) {
 */
 static TreeDecl p_decl(void) {
    TreeDecl decl = 0; // set null by default
-   TokenCode code = curr()->code;
+	TokenCode code;
+	
    // body
    TreeType l0type = p_type();
-   TreeId l1id = p_id();
+
+	code = curr()->code;
+	if ( code != TOK_ID )
+		ERR("bad declaration");
+	
+   TreeId l1id = t_id(code->lexeme);
+	
+	// add id to symbol table;
+	
    eat(';');
    decl = t_decl_type(l0type, l1id);
 

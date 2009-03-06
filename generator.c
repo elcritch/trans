@@ -1,5 +1,6 @@
 #include "tree.h"
 
+/*
 static void g_stmt(TreeStmt stmt) {
   if (!stmt)
     return;
@@ -10,6 +11,7 @@ static void g_stmt(TreeStmt stmt) {
     default:        ERR("bad stmt");                break;
   }
 }
+
 
 static void g_stmt_while(TreeStmt stmt) {
   Type bool;
@@ -25,3 +27,5 @@ static void g_stmt_while(TreeStmt stmt) {
   emit_ins1("jmp");
   emit_label(lend);
 }
+*/
+

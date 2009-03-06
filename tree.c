@@ -1,7 +1,5 @@
 #include "tree.h"
 #include <stdlib.h>
-#include "scanner/error.h"
-#include "scanner/tokenentry.h"
 
 #define ALLOC(t)		  \
   t v = malloc(sizeof(t)); \
@@ -32,7 +30,14 @@ extern TreeStmt t_stmt_break() {
 */
 
 
-// ================= Program 0 ========================================
+// ================= Block 1 ========================================
+
+// Block ["decls", "stmts"]
+extern TreeId t_id(char *id) {
+  ALLOC(TreeId);
+  v->id = id;
+  return v;
+}
 
 // ================= Block 1 ========================================
 

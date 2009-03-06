@@ -1,3 +1,3 @@
-include ../../Makefile
+include ../Makefile
 
 ldflags+=-lreadline -lncurses -lstdc++

@@ -3,6 +3,8 @@
 
 #include "scanner/token.h"
 #include "symtaben.h"
+#include "scanner/error.h"
+#include "scanner/tokenentry.h"
 
 typedef struct TreeBasic *TreeBasic; 
 typedef struct TreeBlock *TreeBlock; 
@@ -32,6 +34,7 @@ typedef struct TreeUnary *TreeUnary;
 // terminals
 typedef struct TreeId *TreeId; 
 
+
 /*
 struct TreeStmt {
   TokenCode code;
@@ -50,12 +53,8 @@ struct TreeStmt {
 */
 
 struct TreeId {
-  TokenCode code;
-  SymtabEntry entry;
-  char *lex;
+  char *id;
 };
-
-
 
 // Structure: block [["decls", ["decls", "stmts"]]]
 struct TreeBlock {
@@ -256,5 +255,46 @@ struct TreeFactor {
   } u;
 };
 
+extern TreeStmt t_stmt_assign(TreeLoc loc, TreeBool bool);
+extern TreeStmt t_stmt_while(TreeBool bool, TreeStmt stmt);
+extern TreeStmt t_stmt_break();
+extern TreeBlock t_block_decls(TreeDecls decls, TreeStmts stmts);
+extern TreeDecls t_decls_decl(TreeDecl decl, TreeDecls decls);
+extern TreeDecl t_decl_type(TreeType type, TreeId id);
+extern TreeType t_type_basic(TreeBasic basic, TreeType_1 type_1);
+extern TreeType_1 t_type_1_num(TreeType_1 type_1);
+extern TreeBasic t_basic_float();
+extern TreeBasic t_basic_int();
+extern TreeStmts t_stmts_stmt(TreeStmt stmt, TreeStmts stmts);
+extern TreeStmt t_stmt_block(TreeBlock block);
+extern TreeStmt t_stmt_break();
+extern TreeStmt t_stmt_do(TreeStmt stmt, TreeBool bool);
+extern TreeStmt t_stmt_if(TreeBool bool, TreeStmt stmt, TreeStmt else_stmt);
+extern TreeStmt t_stmt_loc(TreeLoc loc, TreeBool bool);
+extern TreeStmt t_stmt_read(TreeLoc loc);
+extern TreeStmt t_stmt_while(TreeBool bool, TreeStmt stmt);
+extern TreeStmt t_stmt_write(TreeBool bool);
+extern TreeLoc t_loc_id(TreeId id, TreeLoc_1 loc_1);
+extern TreeLoc_1 t_loc_1_bool(TreeBool bool, TreeLoc_1 loc_1);
+extern TreeBool t_bool_join(TreeJoin join, TreeBool_1 bool_1);
+extern TreeBool_1 t_bool_1_OR(TreeJoin join, TreeBool_1 bool_1);
+extern TreeJoin t_join_equality(TreeEquality equality, TreeJoin_1 join_1);
+extern TreeJoin_1 t_join_1_AND(TreeEquality equality, TreeJoin_1 join_1);
+extern TreeEquality t_equality_rel(TreeRel rel, TreeEquality_1 equality_1);
+extern TreeEquality_1 t_equality_1_EQ(TreeRel rel, TreeEquality_1 equality_1);
+extern TreeEquality_1 t_equality_1_NE(TreeRel rel, TreeEquality_1 equality_1);
+extern TreeRel t_rel_codeexprexpr(TokenCode code, TreeExpr expr, TreeExpr expr_1);
+extern TreeExpr t_expr_term(TreeTerm term, TreeExpr_1 expr_1);
+extern TreeExpr_1 t_expr_1_term(TokenCode code, TreeTerm term, TreeExpr_1 expr_1);
+extern TreeTerm t_term_unary(TreeUnary unary, TreeTerm_1 term_1);
+extern TreeTerm_1 t_term_1_unary(TokenCode code, TreeUnary unary, TreeTerm_1 term_1);
+extern TreeUnary t_unary_factor(TreeFactor factor);
+extern TreeUnary t_unary_unary(TokenCode code, TreeUnary unary);
+extern TreeFactor t_factor_bool(TreeBool bool);
+extern TreeFactor t_factor_false();
+extern TreeFactor t_factor_loc(TreeLoc loc);
+extern TreeFactor t_factor_num(TokenEntry tok);
+extern TreeFactor t_factor_real(TokenEntry tok);
+extern TreeFactor t_factor_true();
 
 #endif
