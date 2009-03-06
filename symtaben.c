@@ -1,24 +1,10 @@
+#include <stdlib.h>
 #include "symtaben.h"
 #include "scanner/scanner.h"
-#include <stdlib.h>
+#include "scanner/error.h"
 
-/*
-typedef struct symtabentry {
-  // token id
-  char *id;
-  TreeType type;
-  unsigned int dims;
+#include "symtaben.h"
 
-  // table information 
-  unsigned int offset;
-  unsigned int depth;
-
-  // line and column number
-  unsigned int line;
-  unsigned int col;
-} *SymtabEntry;
-
-*/
 extern SymtabEntry SymtabEntryNew(char *id, TreeType type) {
 	SymtabEntry entry = malloc(sizeof(struct SymtabEntry));
 	if (!entry) ERR("SymtabEntry malloc() failed");

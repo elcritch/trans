@@ -1,5 +1,6 @@
 #include "tree.h"
-#include "symtaben.h"
+#include "terminals.h"
+// #include "symtaben.h"
 #include "scanner/scanner.h"
 #include "scanner/token.h"
 
@@ -77,7 +78,7 @@ static TreeDecls p_decls(void) {
    
    // check if we have next production, return on zero
    code = curr()->code;
-   if ( code != TOK_int || code != TOK_float  ) 
+   if ( code != TOK_int || code != TOK_real  ) 
       return t_decls_decl(l0decl, 0);
 	
 	// if found type then another type continue
@@ -95,18 +96,13 @@ static TreeDecls p_decls(void) {
 */
 static TreeDecl p_decl(void) {
    TreeDecl decl = 0; // set null by default
-	TokenCode code;
 	
    // body
    TreeType l0type = p_type();
-
-	code = curr()->code;
-	if ( code != TOK_ID )
-		ERR("bad declaration");
-	
-   TreeId l1id = t_id(code->lexeme);
+   TreeId l1id = p_id();
 	
 	// add id to symbol table;
+	
 	
    eat(';');
    decl = t_decl_type(l0type, l1id);
@@ -122,7 +118,7 @@ static TreeDecl p_decl(void) {
 */
 static TreeType p_type(void) {
    TreeType type = 0; // set null by default
-   TokenCode code = curr()->code;
+   // TokenCode code = curr()->code;
    // body
    TreeBasic l0basic = p_basic();
    TreeType_1 l1type_1 = p_type_1();
@@ -148,7 +144,7 @@ static TreeType_1 p_type_1(void) {
          TreeNum l1num = p_num();
          eat(']');
          TreeType_1 l3type_1 = p_type_1();
-         type_1 = t_type_1_num(l3type_1);
+         type_1 = t_type_1_num(l1num, l3type_1);
          break;
       }
 
@@ -199,12 +195,12 @@ static TreeBasic p_basic(void) {
 */
 static TreeStmts p_stmts(void) {
    TreeStmts stmts = 0; // set null by default
-   TokenCode code = curr()->code;
    // body
-   TreeStmt l0stmt = p_stmt()
+	TreeStmt l0stmt = p_stmt();
    
    // check if we have next production
-   if ( l0stmt == 0 ) 
+   TokenCode code = curr()->code;
+   if ( code == '}' ) 
       return stmts;
 
    TreeStmts l1stmts = p_stmts();
@@ -226,7 +222,7 @@ static TreeStmt p_stmt(void) {
    // cases
    
    switch (code) {
-      case TOK_id: {  //===== REDUCED TOK_loc
+      case TOK_ID: {  //===== REDUCED TOK_loc
          TreeLoc l0loc = p_loc();
          eat('=');
          TreeBool l2bool = p_bool();
@@ -240,17 +236,13 @@ static TreeStmt p_stmt(void) {
          TreeBool l2bool = p_bool();
          eat(')');
          TreeStmt l4stmt = p_stmt();
-         stmt = t_stmt_if(l2bool, l4stmt);
-         break;
-      }
-      case TOK_if: {  
-         eat(TOK_if);
-         eat('(');
-         TreeBool l2bool = p_bool();
-         eat(')');
-         TreeStmt l4stmt = p_stmt();
-         eat(TOK_else);
-         TreeStmt l6stmt = p_stmt();
+			
+         TreeStmt l6stmt = 0;
+			TokenCode code = curr()->code;
+			if (code == TOK_else) {
+	         eat(TOK_else);
+	         l6stmt = p_stmt();
+			}
          stmt = t_stmt_if(l2bool, l4stmt, l6stmt);
          break;
       }
@@ -316,7 +308,7 @@ static TreeStmt p_stmt(void) {
 */
 static TreeLoc p_loc(void) {
    TreeLoc loc = 0; // set null by default
-   TokenCode code = curr()->code;
+   // TokenCode code = curr()->code;
    // body
    TreeId l0id = p_id();
    TreeLoc_1 l1loc_1 = p_loc_1();
@@ -363,7 +355,7 @@ static TreeLoc_1 p_loc_1(void) {
 */
 static TreeBool p_bool(void) {
    TreeBool bool = 0; // set null by default
-   TokenCode code = curr()->code;
+   // TokenCode code = curr()->code;
    // body
    TreeJoin l0join = p_join();
    TreeBool_1 l1bool_1 = p_bool_1();
@@ -408,7 +400,7 @@ static TreeBool_1 p_bool_1(void) {
 */
 static TreeJoin p_join(void) {
    TreeJoin join = 0; // set null by default
-   TokenCode code = curr()->code;
+   // TokenCode code = curr()->code;
    // body
    TreeEquality l0equality = p_equality();
    TreeJoin_1 l1join_1 = p_join_1();
@@ -454,7 +446,7 @@ static TreeJoin_1 p_join_1(void) {
 */
 static TreeEquality p_equality(void) {
    TreeEquality equality = 0; // set null by default
-   TokenCode code = curr()->code;
+   // TokenCode code = curr()->code;
    // body
    TreeRel l0rel = p_rel();
    TreeEquality_1 l1equality_1 = p_equality_1();
@@ -553,7 +545,7 @@ static TreeRel p_rel(void) {
 */
 static TreeExpr p_expr(void) {
    TreeExpr expr = 0; // set null by default
-   TokenCode code = curr()->code;
+   // TokenCode code = curr()->code;
    // body
    TreeTerm l0term = p_term();
    TreeExpr_1 l1expr_1 = p_expr_1();
@@ -606,7 +598,7 @@ static TreeExpr_1 p_expr_1(void) {
 */
 static TreeTerm p_term(void) {
    TreeTerm term = 0; // set null by default
-   TokenCode code = curr()->code;
+   // TokenCode code = curr()->code;
    // body
    TreeUnary l0unary = p_unary();
    TreeTerm_1 l1term_1 = p_term_1();
@@ -708,19 +700,19 @@ static TreeFactor p_factor(void) {
          factor = t_factor_bool(l1bool);
          break;
       }
-      case TOK_id: {  //===== REDUCED TOK_loc
+      case TOK_ID: {  //===== REDUCED TOK_loc
          TreeLoc l0loc = p_loc();
          factor = t_factor_loc(l0loc);
          break;
       }
       case TOK_num: {  
          TreeNum l0num = p_num();
-         factor = t_factor_num();
+         factor = t_factor_num(l0num);
          break;
       }
       case TOK_real: {  
          TreeReal l0real = p_real();
-         factor = t_factor_real();
+         factor = t_factor_real(l0real);
          break;
       }
       case TOK_true: {  

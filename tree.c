@@ -6,18 +6,18 @@
   if (!v) ERR("malloc() failed")
 
 /**
-extern TreeStmt t_stmt_assign(TreeLoc loc, TreeBool bool) {
+extern TreeStmt t_stmt_assign(TreeLoc loc, TreeBool bools) {
   ALLOC(TreeStmt);
   v->code=TOK_ID;
   v->u.u_assign.loc=loc;
-  v->u.u_assign.bool=bool;
+  v->u.u_assign.bools=bools;
   return v;
 }
 
-extern TreeStmt t_stmt_while(TreeBool bool, TreeStmt stmt) {
+extern TreeStmt t_stmt_while(TreeBool bools, TreeStmt stmt) {
   ALLOC(TreeStmt);
   v->code=TOK_while;
-  v->u.u_while.bool=bool;
+  v->u.u_while.bools=bools;
   v->u.u_while.stmt=stmt;
   return v;
 }
@@ -32,12 +32,6 @@ extern TreeStmt t_stmt_break() {
 
 // ================= Block 1 ========================================
 
-// Block ["decls", "stmts"]
-extern TreeId t_id(char *id) {
-  ALLOC(TreeId);
-  v->id = id;
-  return v;
-}
 
 // ================= Block 1 ========================================
 
@@ -82,7 +76,7 @@ extern TreeType t_type_basic(TreeBasic basic, TreeType_1 type_1) {
 // ================= Type_1 1 ========================================
 
 // Type_1 ["type_1"]
-extern TreeType_1 t_type_1_num(TreeType_1 type_1) {
+extern TreeType_1 t_type_1_num(TreeNum num, TreeType_1 type_1) {
   ALLOC(TreeType_1);
   v->type_1 = type_1;
   return v;
@@ -134,30 +128,30 @@ extern TreeStmt t_stmt_break() {
   return v;
 }
 
-// Stmt ["stmt", "bool"]
-extern TreeStmt t_stmt_do(TreeStmt stmt, TreeBool bool) {
+// Stmt ["stmt", "bools"]
+extern TreeStmt t_stmt_do(TreeStmt stmt, TreeBool bools) {
   ALLOC(TreeStmt);
   v->code = TOK_do;
   v->u.u_do.stmt = stmt;
-  v->u.u_do.bool = bool;
+  v->u.u_do.bools = bools;
   return v;
 }
 
-// Stmt ["bool", "stmt", "stmt"]
-extern TreeStmt t_stmt_if(TreeBool bool, TreeStmt stmt, TreeStmt else_stmt) {
+// Stmt ["bools", "stmt", "stmt"]
+extern TreeStmt t_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt) {
   ALLOC(TreeStmt);
   v->code = TOK_if;
-  v->u.u_if.bool = bool;
+  v->u.u_if.bools = bools;
   v->u.u_if.stmt = stmt;
   v->u.u_if.else_stmt = else_stmt;
   return v;
 }
 
-// Stmt ["loc", "bool"]
-extern TreeStmt t_stmt_loc(TreeLoc loc, TreeBool bool) {
+// Stmt ["loc", "bools"]
+extern TreeStmt t_stmt_loc(TreeLoc loc, TreeBool bools) {
   ALLOC(TreeStmt);
   v->u.u_loc.loc = loc;
-  v->u.u_loc.bool = bool;
+  v->u.u_loc.bools = bools;
   return v;
 }
 
@@ -169,20 +163,20 @@ extern TreeStmt t_stmt_read(TreeLoc loc) {
   return v;
 }
 
-// Stmt ["bool", "stmt"]
-extern TreeStmt t_stmt_while(TreeBool bool, TreeStmt stmt) {
+// Stmt ["bools", "stmt"]
+extern TreeStmt t_stmt_while(TreeBool bools, TreeStmt stmt) {
   ALLOC(TreeStmt);
   v->code = TOK_while;
-  v->u.u_while.bool = bool;
+  v->u.u_while.bools = bools;
   v->u.u_while.stmt = stmt;
   return v;
 }
 
-// Stmt ["bool"]
-extern TreeStmt t_stmt_write(TreeBool bool) {
+// Stmt ["bools"]
+extern TreeStmt t_stmt_write(TreeBool bools) {
   ALLOC(TreeStmt);
   v->code = TOK_write;
-  v->u.u_write.bool = bool;
+  v->u.u_write.bools = bools;
   return v;
 }
 
@@ -198,10 +192,10 @@ extern TreeLoc t_loc_id(TreeId id, TreeLoc_1 loc_1) {
 
 // ================= Loc_1 1 ========================================
 
-// Loc_1 ["bool", "loc_1"]
-extern TreeLoc_1 t_loc_1_bool(TreeBool bool, TreeLoc_1 loc_1) {
+// Loc_1 ["bools", "loc_1"]
+extern TreeLoc_1 t_loc_1_bool(TreeBool bools, TreeLoc_1 loc_1) {
   ALLOC(TreeLoc_1);
-  v->bool = bool;
+  v->bools = bools;
   v->loc_1 = loc_1;
   return v;
 }
@@ -279,7 +273,7 @@ extern TreeEquality_1 t_equality_1_NE(TreeRel rel, TreeEquality_1 equality_1) {
 // ================= Rel 2 ========================================
 
 // Rel ["code", "expr", "expr"]
-extern TreeRel t_rel_codeexprexpr(TokenCode code, TreeExpr expr, TreeExpr expr_1) {
+extern TreeRel t_rel(TokenCode code, TreeExpr expr, TreeExpr expr_1) {
   ALLOC(TreeRel);
   v->code = code;
   v->expr = expr;
@@ -350,11 +344,11 @@ extern TreeUnary t_unary_unary(TokenCode code, TreeUnary unary) {
 
 // ================= Factor 6 ========================================
 
-// Factor ["bool"]
-extern TreeFactor t_factor_bool(TreeBool bool) {
+// Factor ["bools"]
+extern TreeFactor t_factor_bool(TreeBool bools) {
   ALLOC(TreeFactor);
   v->code = '(';
-  v->u.u_bool.bool = bool;
+  v->u.u_bool.bools = bools;
   return v;
 }
 
@@ -375,18 +369,16 @@ extern TreeFactor t_factor_loc(TreeLoc loc) {
 }
 
 // Factor []
-extern TreeFactor t_factor_num(TokenEntry tok) {
+extern TreeFactor t_factor_num(TreeNum num) {
   ALLOC(TreeFactor);
-  v->code = tok->code;
-  v->val = tok->name;
+  v->u.u_num.num = num;
   return v;
 }
 
 // Factor []
-extern TreeFactor t_factor_real(TokenEntry tok) {
+extern TreeFactor t_factor_real(TreeReal real) {
   ALLOC(TreeFactor);
-  v->code = tok->code;
-  v->val = tok->name;
+  v->u.u_real.real = real;
   return v;
 }
 

@@ -2,9 +2,8 @@
 #include <vector>
 
 #include "symtab.h"
+// #include "symtaben.h"
 #include "scanner/error.h"
-
-typedef struct SymtabEntry *SymtabEntry;
 
 using namespace std;
 
