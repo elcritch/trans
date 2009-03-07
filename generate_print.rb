@@ -9,7 +9,7 @@ def printer(type, name)
 end
 
 def printer_union(uname, type, name)
-  puts "      print_#{type}(d+1, v->#{uname}.#{name});"
+  puts "      print_#{type}(d+1, v->u.#{uname}.#{name});"
 end
 def print_union(uname, toks)
   toks.scan(/\s*(\w+)\s*(\w+)\s*;/).each{|t| 
@@ -26,7 +26,7 @@ File.open("tree.h", "r") do |fl|
   st = lines.map do |ln| 
     func = ln[0].match(/struct (Tree\w+)/)[1]
     puts """
-extern void print_#{func}(#{func} v, int d) {
+extern void print_#{func}( int d, #{func} v ) {
    if (!v) return;
    printer(\"#{func.gsub(/Tree|Token/,'')}:\", d);
 """

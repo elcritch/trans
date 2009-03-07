@@ -4,7 +4,6 @@
 #include "scanner/scanner.h"
 #include "scanner/token.h"
 
-static TreeProgram parser(void);
 static TreeBlock p_block(void) ;
 static TreeDecls p_decls(void) ;
 static TreeDecl p_decl(void) ;
@@ -80,7 +79,7 @@ static TreeDecls p_decls(void) {
 	// if found type then another type continue
    TreeDecls l1decls = p_decls();
    decls = t_decls_decl(l0decl, l1decls);
-  
+  	
    return decls;
 }
 
@@ -191,18 +190,16 @@ static TreeBasic p_basic(void) {
 */
 static TreeStmts p_stmts(void) {
    TreeStmts stmts = 0; // set null by default
-   // body
-	TreeStmt l0stmt = p_stmt();
-   
-   // check if we have next production
    TokenCode code = curr()->code;
-   if ( code == '}' ) 
-      return stmts;
 
+   // body
+	if ( code == '}' ) 
+      return 0;
+   
+	TreeStmt l0stmt = p_stmt();   
    TreeStmts l1stmts = p_stmts();
    stmts = t_stmts_stmt(l0stmt, l1stmts);
 
-   
    return stmts;
 }
 

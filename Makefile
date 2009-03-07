@@ -6,7 +6,7 @@ objs+=$(addsuffix .o,$(basename $(srcs)))
 scanner_objs+=scanner/error.o scanner/scanner.o  scanner/strtab.o  scanner/tokens.o
 
 # ccflags+=-MMD -g -Wall
-ccflags+=-g -Wall
+ccflags+=-g -Wall -std=c99
 ldflags+=-lreadline -lncurses -lstdc++
 
 test:=./$(prog)
@@ -26,7 +26,7 @@ test:=./$(prog)
 %.o: %.cc
 	g++ $(ccflags) -c $<
 
-print_parse: print_parse.o parser.o symtaben.o terminals.o tree.o symtab.o $(scanner_objs)
+print_parse: print_parse.o printlib.o parser.o symtaben.o terminals.o tree.o symtab.o $(scanner_objs)
 	gcc $(ccflags) -o $@ $^ $(ldflags)
 
 $(prog): $(objs)
