@@ -13,8 +13,8 @@
 extern TreeId p_id() {
 	ALLOC(TreeId);
 	Token tok = curr();
-	eat(TOK_ID);
 	v->id = tok->lexeme;
+	eat(TOK_ID);
 
 	return v;
 }
@@ -23,7 +23,7 @@ extern TreeId p_id() {
 extern TreeNum p_num() {
 	ALLOC(TreeNum);
 	Token tok = curr();
-	eat(TOK_num);
+	eat(TOK_NUM);
 	v->num = tok->lexeme;
 
 	return v;
@@ -33,7 +33,7 @@ extern TreeNum p_num() {
 extern TreeReal p_real() {
 	ALLOC(TreeReal);
 	Token tok = curr();
-	eat(TOK_real);
+	eat(TOK_REAL);
 	v->real = tok->lexeme;
 
 	return v;

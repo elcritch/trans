@@ -131,7 +131,7 @@ static Token scan_id(void) {
 }
 
 static Token scan_num(void) {
-  TokenCode code=TOK_num;
+  TokenCode code=TOK_NUM;
   char *old=s.pos;
   while (isdigit(*s.pos))
     s.pos++;

@@ -4,6 +4,9 @@
 #include "scanner/scanner.h"
 #include "scanner/token.h"
 
+#include <setjmp.h>
+#include <signal.h>
+
 static TreeBlock p_block(void) ;
 static TreeDecls p_decls(void) ;
 static TreeDecl p_decl(void) ;
@@ -29,6 +32,7 @@ static TreeUnary p_unary(void) ;
 static TreeFactor p_factor(void) ;
 
 
+jmp_buf env;
 
 /**
 ==================== Program ==========================================
@@ -36,6 +40,7 @@ static TreeFactor p_factor(void) ;
       Program : block 
 */
 extern TreeBlock Program(void) {
+   // setjmp(env);
    TreeBlock block = p_block();
    return block;
 }
@@ -46,7 +51,8 @@ extern TreeBlock Program(void) {
    Grammar:
       block : '{' decls stmts '}' 
 */
-static TreeBlock p_block(void) {
+static TreeBlock p_block(void)  {
+   printf("Block\n");
    TreeBlock block = 0; // set null by default
 
    // body
@@ -65,7 +71,8 @@ static TreeBlock p_block(void) {
    Grammar:
       decls : decl decls |  e
 */
-static TreeDecls p_decls(void) {
+static TreeDecls p_decls(void)  {
+   printf("Decls\n");
    TreeDecls decls = 0; // set null by default
    TokenCode code = curr()->code;
    // body
@@ -73,7 +80,7 @@ static TreeDecls p_decls(void) {
    
    // check if we have next production, return on zero
    code = curr()->code;
-   if ( code != TOK_int || code != TOK_real  ) 
+   if ( code != TOK_int && code != TOK_REAL  ) 
       return t_decls_decl(l0decl, 0);
 	
 	// if found type then another type continue
@@ -89,7 +96,8 @@ static TreeDecls p_decls(void) {
    Grammar:
       decl : type id ';' 
 */
-static TreeDecl p_decl(void) {
+static TreeDecl p_decl(void)  {
+   printf("Decl\n");
    TreeDecl decl = 0; // set null by default
 	
    // body
@@ -111,7 +119,8 @@ static TreeDecl p_decl(void) {
    Grammar:
       type : basic type_1 
 */
-static TreeType p_type(void) {
+static TreeType p_type(void)  {
+   printf("Type\n");
    TreeType type = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -128,7 +137,8 @@ static TreeType p_type(void) {
    Grammar:
       type_1 : '[' num ']' type_1 |  e
 */
-static TreeType_1 p_type_1(void) {
+static TreeType_1 p_type_1(void)  {
+   printf("Type_1\n");
    TreeType_1 type_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -157,7 +167,8 @@ static TreeType_1 p_type_1(void) {
    Grammar:
       basic : 'int' | 'float' 
 */
-static TreeBasic p_basic(void) {
+static TreeBasic p_basic(void)  {
+   printf("Basic\n");
    TreeBasic basic = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -175,8 +186,10 @@ static TreeBasic p_basic(void) {
       }
       default:
          error_parse("basic");
+         // longjmp(env,1);
+         kill(getpid(),SIGINT);
          break;
-   }   
+   }
 
    
    return basic;
@@ -188,13 +201,14 @@ static TreeBasic p_basic(void) {
    Grammar:
       stmts : stmt stmts |  e
 */
-static TreeStmts p_stmts(void) {
+static TreeStmts p_stmts(void)  {
+   printf("Stmts\n");
    TreeStmts stmts = 0; // set null by default
    TokenCode code = curr()->code;
 
    // body
 	if ( code == '}' ) 
-      return 0;
+      return stmts = 0;
    
 	TreeStmt l0stmt = p_stmt();   
    TreeStmts l1stmts = p_stmts();
@@ -209,7 +223,8 @@ static TreeStmts p_stmts(void) {
    Grammar:
       stmt : loc '=' bool ';' | 'if' '(' bool ')' stmt | 'if' '(' bool ')' stmt 'else' stmt | 'while' '(' bool ')' stmt | 'do' stmt 'while' '(' bool ')' ';' | 'break' ';' | block | 'read' loc ';' | 'write' bool ';' 
 */
-static TreeStmt p_stmt(void) {
+static TreeStmt p_stmt(void)  {
+   printf("Stmt\n");
    TreeStmt stmt = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -286,6 +301,8 @@ static TreeStmt p_stmt(void) {
       }
       default:
          error_parse("stmt");
+         // longjmp(env,1);
+         kill(getpid(),SIGINT);
          break;
    }   
 
@@ -299,7 +316,8 @@ static TreeStmt p_stmt(void) {
    Grammar:
       loc : id loc_1 
 */
-static TreeLoc p_loc(void) {
+static TreeLoc p_loc(void)  {
+   printf("Loc\n");
    TreeLoc loc = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -317,7 +335,8 @@ static TreeLoc p_loc(void) {
    Grammar:
       loc_1 : '[' bool ']' loc_1 |  e
 */
-static TreeLoc_1 p_loc_1(void) {
+static TreeLoc_1 p_loc_1(void)  {
+   printf("Loc_1\n");
    TreeLoc_1 loc_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -346,7 +365,8 @@ static TreeLoc_1 p_loc_1(void) {
    Grammar:
       bool : join bool_1 
 */
-static TreeBool p_bool(void) {
+static TreeBool p_bool(void)  {
+   printf("Bool\n");
    TreeBool bool = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -364,7 +384,8 @@ static TreeBool p_bool(void) {
    Grammar:
       bool_1 : '||' join bool_1 |  e
 */
-static TreeBool_1 p_bool_1(void) {
+static TreeBool_1 p_bool_1(void)  {
+   printf("Bool_1\n");
    TreeBool_1 bool_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -391,7 +412,8 @@ static TreeBool_1 p_bool_1(void) {
    Grammar:
       join : equality join_1 
 */
-static TreeJoin p_join(void) {
+static TreeJoin p_join(void)  {
+   printf("Join\n");
    TreeJoin join = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -409,7 +431,8 @@ static TreeJoin p_join(void) {
    Grammar:
       join_1 : '&&' equality join_1 |  e
 */
-static TreeJoin_1 p_join_1(void) {
+static TreeJoin_1 p_join_1(void)  {
+   printf("Join_1\n");
    TreeJoin_1 join_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -437,7 +460,8 @@ static TreeJoin_1 p_join_1(void) {
    Grammar:
       equality : rel equality_1 
 */
-static TreeEquality p_equality(void) {
+static TreeEquality p_equality(void)  {
+   printf("Equality\n");
    TreeEquality equality = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -455,7 +479,8 @@ static TreeEquality p_equality(void) {
    Grammar:
       equality_1 : '==' rel equality_1 | '!=' rel equality_1 |  e
 */
-static TreeEquality_1 p_equality_1(void) {
+static TreeEquality_1 p_equality_1(void)  {
+   printf("Equality_1\n");
    TreeEquality_1 equality_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -490,7 +515,8 @@ static TreeEquality_1 p_equality_1(void) {
    Grammar:
       rel : '<' expr | '<=' expr | '>=' expr | '>' expr |  e
 */
-static TreeRel p_rel(void) {
+static TreeRel p_rel(void)  {
+   printf("Rel\n");
    TreeRel rel = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -536,7 +562,8 @@ static TreeRel p_rel(void) {
    Grammar:
       expr : term expr_1 
 */
-static TreeExpr p_expr(void) {
+static TreeExpr p_expr(void)  {
+   printf("Expr\n");
    TreeExpr expr = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -554,7 +581,8 @@ static TreeExpr p_expr(void) {
    Grammar:
       expr_1 : '+' term expr_1 | '-' term expr_1 |  e
 */
-static TreeExpr_1 p_expr_1(void) {
+static TreeExpr_1 p_expr_1(void)  {
+   printf("Expr_1\n");
    TreeExpr_1 expr_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -589,7 +617,8 @@ static TreeExpr_1 p_expr_1(void) {
    Grammar:
       term : unary term_1 
 */
-static TreeTerm p_term(void) {
+static TreeTerm p_term(void)  {
+   printf("Term\n");
    TreeTerm term = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -607,7 +636,8 @@ static TreeTerm p_term(void) {
    Grammar:
       term_1 : '*' unary term_1 | '/' unary term_1 |  e
 */
-static TreeTerm_1 p_term_1(void) {
+static TreeTerm_1 p_term_1(void)  {
+   printf("Term_1\n");
    TreeTerm_1 term_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -642,7 +672,8 @@ static TreeTerm_1 p_term_1(void) {
    Grammar:
       unary : '!' unary | '-' unary | factor 
 */
-static TreeUnary p_unary(void) {
+static TreeUnary p_unary(void)  {
+   printf("Unary\n");
    TreeUnary unary = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -660,14 +691,11 @@ static TreeUnary p_unary(void) {
          unary = t_unary_unary(code, l1unary);
          break;
       }
-      case '(': {  //===== REDUCED TOK_factor
+      default: {
          TreeFactor l0factor = p_factor();
          unary = t_unary_factor(l0factor);
          break;
-      }
-      default:
-         error_parse("unary");
-         break;
+	  }
    }   
 
    
@@ -680,7 +708,8 @@ static TreeUnary p_unary(void) {
    Grammar:
       factor : '(' bool ')' | loc | num | real | 'true' | 'false' 
 */
-static TreeFactor p_factor(void) {
+static TreeFactor p_factor(void)  {
+   printf("Factor\n");
    TreeFactor factor = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -698,12 +727,12 @@ static TreeFactor p_factor(void) {
          factor = t_factor_loc(l0loc);
          break;
       }
-      case TOK_num: {  
+      case TOK_NUM: {  
          TreeNum l0num = p_num();
          factor = t_factor_num(l0num);
          break;
       }
-      case TOK_real: {  
+      case TOK_REAL: {  
          TreeReal l0real = p_real();
          factor = t_factor_real(l0real);
          break;
@@ -720,6 +749,8 @@ static TreeFactor p_factor(void) {
       }
       default:
          error_parse("factor");
+         // longjmp(env,1);
+         kill(getpid(),SIGINT);
          break;
    }   
 
