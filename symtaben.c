@@ -6,9 +6,6 @@
 #include "symtaben.h"
 #include "tree.h"
 
-unsigned int SYM_OFFSET = 0;
-unsigned int SYM_DEPTH = 0;
-unsigned int SYM_MAX_DEPTH = 0;
 
 extern SymtabEntry SymtabEntryNew(char *id, TreeType type) {
 	SymtabEntry entry = malloc(sizeof(struct symtabentry));

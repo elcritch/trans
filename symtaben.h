@@ -5,6 +5,9 @@
 
 #define SYM_MAX_DIMS 255
 
+unsigned int SYM_OFFSET;
+unsigned int SYM_DEPTH;
+unsigned int SYM_MAX_DEPTH;
 
 // typedef struct SymtabEntry *SymtabEntry;
 typedef struct treebasic *TreeBasic; 

@@ -47,6 +47,10 @@ jmp_buf env;
 */
 extern TreeBlock Program(void) {
    // setjmp(env);
+   SYM_OFFSET = 0;
+   SYM_DEPTH = -1;  // seems like this might be a hack
+   SYM_MAX_DEPTH = 0;
+   
    TreeBlock block = p_block();
 
    return block;

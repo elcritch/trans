@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "symtab.h"
-
+#include "symtaben.h"
 // using namespace std;
 
 typedef std::map<char*,SymtabEntry> ScopeTab;
@@ -13,12 +13,17 @@ typedef struct symtabentry *SymtabEntry;
 static SymTab symtab;
 
 extern LINKAGE void SymtabPush(void) {
+  SYM_DEPTH++;
+  SYM_MAX_DEPTH++;
+  
   symtab.push_back(new ScopeTab);
 }
 
 extern LINKAGE void SymtabPop(void) {
-  if (!symtab.empty())
+  if (!symtab.empty()) {
     symtab.pop_back();
+    SYM_DEPTH--;
+  }  
 }
 
 static SymtabEntry SymTabGetFromTab(char* id, ScopeTab& scopeTab) {
