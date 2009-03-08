@@ -1,6 +1,6 @@
 #ifndef __SYMTABENT_H
 #define __SYMTABENT_H 1
-// #include "scanner/token.h"
+#include "scanner/token.h"
 // #include "tree.h"
 
 #define SYM_MAX_DIMS 255
@@ -38,6 +38,7 @@ typedef struct symtabentry {
   // token id
   char *id;
   TreeType type;
+  TokenCode tok_code;
   unsigned int dims;
 
   // table information 

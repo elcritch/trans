@@ -6,7 +6,6 @@
 #include "symtaben.h"
 #include "tree.h"
 
-
 unsigned int SYM_OFFSET = 0;
 unsigned int SYM_DEPTH = 0;
 unsigned int SYM_MAX_DEPTH = 0;
@@ -15,6 +14,8 @@ extern SymtabEntry SymtabEntryNew(char *id, TreeType type) {
 	SymtabEntry entry = malloc(sizeof(struct symtabentry));
 	if (!entry) ERR("SymtabEntry malloc() failed");
 	
+   entry->id = id;
+   entry->tok_code = type->basic->code;
 	entry->type = type; // store var type
    entry->offset = SYM_OFFSET++; // increment offset of var
    entry->depth = SYM_DEPTH; // block depth
@@ -32,4 +33,7 @@ extern SymtabEntry SymtabEntryNew(char *id, TreeType type) {
 	
 	return entry;
 }
+
+
+
 

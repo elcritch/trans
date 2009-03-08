@@ -59,7 +59,7 @@ extern TreeBlock Program(void) {
       block : '{' decls stmts '}' 
 */
 static TreeBlock p_block(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Block		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Block		line:'%s'\n", scanner_str() );
    TreeBlock block = 0; // set null by default
    
    SymtabPush();
@@ -73,7 +73,7 @@ static TreeBlock p_block(void)  {
    
    SymtabPop();
    
-   printf(">>>>>>>>>>>>>>>>\nTreeBlock\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeBlock\n");
    // print_TreeBlock(2,block);
    return block;
 }
@@ -85,7 +85,7 @@ static TreeBlock p_block(void)  {
       decls : decl decls |  e
 */
 static TreeDecls p_decls(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Decls		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Decls		line:'%s'\n", scanner_str() );
    TreeDecls decls = 0; // set null by default
    TokenCode code = curr()->code;
    
@@ -100,7 +100,7 @@ static TreeDecls p_decls(void)  {
    TreeDecls l1decls = p_decls();
    decls = t_decls_decl(l0decl, l1decls);
    
-   printf(">>>>>>>>>>>>>>>>\nTreeDecls\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeDecls\n");
    // print_TreeDecls(2,decls);
    return decls;
 }
@@ -112,21 +112,23 @@ static TreeDecls p_decls(void)  {
       decl : type id ';' 
 */
 static TreeDecl p_decl(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Decl		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Decl		line:'%s'\n", scanner_str() );
    TreeDecl decl = 0; // set null by default
 	
    // body
    TreeType l0type = p_type();
-   TreeId l1id = p_id();
+   TreeId l1id = p_decl_id();
 	
 	// add id to symbol table;
    SymtabEntry id_entry = SymtabEntryNew(l1id->id, l0type);
    SymTabPut(l1id->id, id_entry);
-	
+   printf("decl: Adding Symtable Entry: %p\n", id_entry);
+   print_SymtabEntry(2,id_entry);
+   
    eat(';');
    decl = t_decl_type(l0type, l1id);
 
-   printf(">>>>>>>>>>>>>>>>\nTreeDecl\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeDecl\n");
    // print_TreeDecl(2,decl);
    return decl;
 }
@@ -138,7 +140,7 @@ static TreeDecl p_decl(void)  {
       type : basic type_1 
 */
 static TreeType p_type(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Type		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Type		line:'%s'\n", scanner_str() );
    TreeType type = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -146,7 +148,7 @@ static TreeType p_type(void)  {
    TreeType_1 l1type_1 = p_type_1();
    type = t_type_basic(l0basic, l1type_1);
    
-   printf(">>>>>>>>>>>>>>>>\nTreeType\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeType\n");
    // print_TreeType(2,type);
    return type;
 }
@@ -158,7 +160,7 @@ static TreeType p_type(void)  {
       type_1 : '[' num ']' type_1 |  e
 */
 static TreeType_1 p_type_1(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Type_1		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Type_1		line:'%s'\n", scanner_str() );
    TreeType_1 type_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -178,7 +180,7 @@ static TreeType_1 p_type_1(void)  {
    }   
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeType_1\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeType_1\n");
    // print_TreeType_1(2,type_1);
    return type_1;
 }
@@ -190,7 +192,7 @@ static TreeType_1 p_type_1(void)  {
       basic : 'int' | 'float' 
 */
 static TreeBasic p_basic(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Basic		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Basic		line:'%s'\n", scanner_str() );
    TreeBasic basic = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -214,7 +216,7 @@ static TreeBasic p_basic(void)  {
    }
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeBasic\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeBasic\n");
    // print_TreeBasic(2,basic);
    return basic;
 }
@@ -226,7 +228,7 @@ static TreeBasic p_basic(void)  {
       stmts : stmt stmts |  e
 */
 static TreeStmts p_stmts(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Stmts		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Stmts		line:'%s'\n", scanner_str() );
    TreeStmts stmts = 0; // set null by default
    TokenCode code = curr()->code;
 
@@ -238,7 +240,7 @@ static TreeStmts p_stmts(void)  {
    TreeStmts l1stmts = p_stmts();
    stmts = t_stmts_stmt(l0stmt, l1stmts);
 
-   printf(">>>>>>>>>>>>>>>>\nTreeStmts\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeStmts\n");
    // print_TreeStmts(2,stmts);
    return stmts;
 }
@@ -250,7 +252,7 @@ static TreeStmts p_stmts(void)  {
       stmt : loc '=' bool ';' | 'if' '(' bool ')' stmt | 'if' '(' bool ')' stmt 'else' stmt | 'while' '(' bool ')' stmt | 'do' stmt 'while' '(' bool ')' ';' | 'break' ';' | block | 'read' loc ';' | 'write' bool ';' 
 */
 static TreeStmt p_stmt(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Stmt		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Stmt		line:'%s'\n", scanner_str() );
    TreeStmt stmt = 0; // set null by default
    TokenCode code = curr()->code;
    char *str = strdup(scanner_str());
@@ -326,8 +328,8 @@ static TreeStmt p_stmt(void)  {
          stmt = t_stmt_write(l1bool);
          break;
       }
-      default:
-         printf("Stmt error line:'%s'\n", scanner_str() );
+      default: {
+         // printf("Stmt error line:'%s'\n", scanner_str() );
          TokenCode code = curr()->code;
          print_tok(3, code);
          
@@ -335,10 +337,11 @@ static TreeStmt p_stmt(void)  {
          // longjmp(env,1);
          kill(getpid(),SIGINT);
          break;
+      }
    }   
 
    if (stmt) stmt->str = str;
-   printf(">>>>>>>>>>>>>>>>\nTreeStmt\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeStmt\n");
    // print_TreeStmt(2,stmt);
    return stmt;
 }
@@ -350,7 +353,7 @@ static TreeStmt p_stmt(void)  {
       loc : id loc_1 
 */
 static TreeLoc p_loc(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Loc		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Loc		line:'%s'\n", scanner_str() );
    TreeLoc loc = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -359,7 +362,7 @@ static TreeLoc p_loc(void)  {
    loc = t_loc_id(l0id, l1loc_1);
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeLoc\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeLoc\n");
    // print_TreeLoc(2,loc);
    return loc;
 }
@@ -371,7 +374,7 @@ static TreeLoc p_loc(void)  {
       loc_1 : '[' bool ']' loc_1 |  e
 */
 static TreeLoc_1 p_loc_1(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Loc_1		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Loc_1		line:'%s'\n", scanner_str() );
    TreeLoc_1 loc_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -391,7 +394,7 @@ static TreeLoc_1 p_loc_1(void)  {
    }   
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeLoc_1\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeLoc_1\n");
    // print_TreeLoc_1(2,loc_1);
    return loc_1;
 }
@@ -403,7 +406,7 @@ static TreeLoc_1 p_loc_1(void)  {
       bool : join bool_1 
 */
 static TreeBool p_bool(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Bool		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Bool		line:'%s'\n", scanner_str() );
    TreeBool bool = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -412,7 +415,7 @@ static TreeBool p_bool(void)  {
    bool = t_bool_join(l0join, l1bool_1);
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeBool\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeBool\n");
    // print_TreeBool(2,bool);
    return bool;
 }
@@ -424,7 +427,7 @@ static TreeBool p_bool(void)  {
       bool_1 : '||' join bool_1 |  e
 */
 static TreeBool_1 p_bool_1(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Bool_1		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Bool_1		line:'%s'\n", scanner_str() );
    TreeBool_1 bool_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -442,7 +445,7 @@ static TreeBool_1 p_bool_1(void)  {
          break;
    }
    
-   printf(">>>>>>>>>>>>>>>>\nTreeBool_1\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeBool_1\n");
    // print_TreeBool_1(2,bool_1);
    return bool_1;
 }
@@ -454,7 +457,7 @@ static TreeBool_1 p_bool_1(void)  {
       join : equality join_1 
 */
 static TreeJoin p_join(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Join		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Join		line:'%s'\n", scanner_str() );
    TreeJoin join = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -463,7 +466,7 @@ static TreeJoin p_join(void)  {
    join = t_join_equality(l0equality, l1join_1);
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeJoin\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeJoin\n");
    // print_TreeJoin(2,join);
    return join;
 }
@@ -475,7 +478,7 @@ static TreeJoin p_join(void)  {
       join_1 : '&&' equality join_1 |  e
 */
 static TreeJoin_1 p_join_1(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Join_1		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Join_1		line:'%s'\n", scanner_str() );
    TreeJoin_1 join_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -494,7 +497,7 @@ static TreeJoin_1 p_join_1(void)  {
    }   
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeJoin_1\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeJoin_1\n");
    // print_TreeJoin_1(2,join_1);
    return join_1;
 }
@@ -506,7 +509,7 @@ static TreeJoin_1 p_join_1(void)  {
       equality : rel equality_1 
 */
 static TreeEquality p_equality(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Equality		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Equality		line:'%s'\n", scanner_str() );
    TreeEquality equality = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -515,7 +518,7 @@ static TreeEquality p_equality(void)  {
    equality = t_equality_rel(l0rel, l1equality_1);
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeEquality\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeEquality\n");
    // print_TreeEquality(2,equality);
    return equality;
 }
@@ -527,7 +530,7 @@ static TreeEquality p_equality(void)  {
       equality_1 : '==' rel equality_1 | '!=' rel equality_1 |  e
 */
 static TreeEquality_1 p_equality_1(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Equality_1		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Equality_1		line:'%s'\n", scanner_str() );
    TreeEquality_1 equality_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -553,7 +556,7 @@ static TreeEquality_1 p_equality_1(void)  {
    }   
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeEquality_1\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeEquality_1\n");
    // print_TreeEquality_1(2,equality_1);
    return equality_1;
 }
@@ -565,7 +568,7 @@ static TreeEquality_1 p_equality_1(void)  {
       rel : '<' expr | '<=' expr | '>=' expr | '>' expr |  e
 */
 static TreeRel p_rel(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Rel		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Rel		line:'%s'\n", scanner_str() );
    TreeRel rel = 0; // set null by default
    // cases
    TreeExpr l0expr = p_expr(); // common
@@ -603,7 +606,7 @@ static TreeRel p_rel(void)  {
    }   
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeRel\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeRel\n");
    // print_TreeRel(2,rel);
    return rel;
 }
@@ -615,7 +618,7 @@ static TreeRel p_rel(void)  {
       expr : term expr_1 
 */
 static TreeExpr p_expr(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Expr		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Expr		line:'%s'\n", scanner_str() );
    TreeExpr expr = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -624,7 +627,7 @@ static TreeExpr p_expr(void)  {
    expr = t_expr_term(l0term, l1expr_1);
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeExpr\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeExpr\n");
    // print_TreeExpr(2,expr);
    return expr;
 }
@@ -636,7 +639,7 @@ static TreeExpr p_expr(void)  {
       expr_1 : '+' term expr_1 | '-' term expr_1 |  e
 */
 static TreeExpr_1 p_expr_1(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Expr_1		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Expr_1		line:'%s'\n", scanner_str() );
    TreeExpr_1 expr_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -662,7 +665,7 @@ static TreeExpr_1 p_expr_1(void)  {
    }   
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeExpr_1\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeExpr_1\n");
    // print_TreeExpr_1(2,expr_1);
    return expr_1;
 }
@@ -674,7 +677,7 @@ static TreeExpr_1 p_expr_1(void)  {
       term : unary term_1 
 */
 static TreeTerm p_term(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Term		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Term		line:'%s'\n", scanner_str() );
    TreeTerm term = 0; // set null by default
    // TokenCode code = curr()->code;
    // body
@@ -683,7 +686,7 @@ static TreeTerm p_term(void)  {
    term = t_term_unary(l0unary, l1term_1);
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeTerm\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeTerm\n");
    // print_TreeTerm(2,term);
    return term;
 }
@@ -695,7 +698,7 @@ static TreeTerm p_term(void)  {
       term_1 : '*' unary term_1 | '/' unary term_1 |  e
 */
 static TreeTerm_1 p_term_1(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Term_1		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Term_1		line:'%s'\n", scanner_str() );
    TreeTerm_1 term_1 = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -721,7 +724,7 @@ static TreeTerm_1 p_term_1(void)  {
    }   
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeTerm_1\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeTerm_1\n");
    // print_TreeTerm_1(2,term_1);
    return term_1;
 }
@@ -733,7 +736,7 @@ static TreeTerm_1 p_term_1(void)  {
       unary : '!' unary | '-' unary | factor 
 */
 static TreeUnary p_unary(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Unary		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Unary		line:'%s'\n", scanner_str() );
    TreeUnary unary = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -759,7 +762,7 @@ static TreeUnary p_unary(void)  {
    }   
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeUnary\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeUnary\n");
    // print_TreeUnary(2,unary);
    return unary;
 }
@@ -771,7 +774,7 @@ static TreeUnary p_unary(void)  {
       factor : '(' bool ')' | loc | num | real | 'true' | 'false' 
 */
 static TreeFactor p_factor(void)  {
-   printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Factor		line:'%s'\n", scanner_str() );
+   // printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Factor		line:'%s'\n", scanner_str() );
    TreeFactor factor = 0; // set null by default
    TokenCode code = curr()->code;
    // cases
@@ -817,7 +820,7 @@ static TreeFactor p_factor(void)  {
    }   
 
    
-   printf(">>>>>>>>>>>>>>>>\nTreeFactor\n");
+   // printf(">>>>>>>>>>>>>>>>\nTreeFactor\n");
    // print_TreeFactor(2,factor);
    return factor;
 }

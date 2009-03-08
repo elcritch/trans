@@ -17,7 +17,7 @@ typedef struct treereal {
 } *TreeReal;
 
 
-
+extern TreeId p_decl_id();
 extern TreeId p_id();
 extern TreeNum p_num();
 extern TreeReal p_real();

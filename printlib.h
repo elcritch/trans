@@ -6,6 +6,7 @@ void printer(char *msg, int d);
 void printer_line(char *msg, int d);
 void print_tok(int d, int code);
 
+extern void print_SymtabEntry(int d, SymtabEntry v);
 extern void print_TreeBlock( int d, TreeBlock v );
 extern void print_TreeDecls( int d, TreeDecls v );
 extern void print_TreeDecl( int d, TreeDecl v );

@@ -19,11 +19,23 @@ void print_tok(int d, int code) {
 	
 }
 
+extern void print_SymtabEntry(int d, SymtabEntry v) {
+   // token id
+   if (!v) return;
+   
+	for (int i = 0; i<d; i++) printf(" ");
+	printf("SymtabEntry[id:'%s' dims:%d offset:%d depth:%d line:%d col:%d]\n",
+      v->id, v->dims, v->offset, v->depth, v->line, v->col );
+   print_TreeType(d+n, v->type);
+}
+
+
 
 extern void print_TreeId( int d, TreeId v ) {
    if (!v) return;
    printer_line("Id:", d);
-	printf("  %s\n", v->id);
+	printf("id: %s\n", v->id);
+   print_SymtabEntry(d+n,v->entry);
 }
 
 extern void print_TreeNum( int d, TreeNum v ) {
