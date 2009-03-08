@@ -4,11 +4,12 @@
 #include "scanner/error.h"
 
 #include "symtaben.h"
+#include "tree.h"
+
 
 unsigned int SYM_OFFSET = 0;
 unsigned int SYM_DEPTH = 0;
 unsigned int SYM_MAX_DEPTH = 0;
-
 
 extern SymtabEntry SymtabEntryNew(char *id, TreeType type) {
 	SymtabEntry entry = malloc(sizeof(struct symtabentry));
@@ -23,7 +24,7 @@ extern SymtabEntry SymtabEntryNew(char *id, TreeType type) {
 	// count number of dimensions in array
 	unsigned int dims = 0;
 	TreeType_1 head = type->type_1;
-	while (head) {
+	while (head && (dims < SYM_MAX_DIMS) ) {
 		dims++;
 		head = head->type_1;
 	}

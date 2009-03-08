@@ -1,10 +1,11 @@
 #ifndef __TERMINALS_H
 #define __TERMINALS_H 1
 
-
+#include "symtaben.h"
 
 typedef struct treeid {
   char *id;
+  SymtabEntry entry;
 } *TreeId;
 
 typedef struct treenum {

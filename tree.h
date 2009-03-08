@@ -1,35 +1,10 @@
 #ifndef __TREE_H
-#define __TREE_H
+#define __TREE_H 1
 
 #include "terminals.h"
 #include "scanner/token.h"
 #include "scanner/error.h"
 #include "scanner/tokenentry.h"
-
-typedef struct treebasic *TreeBasic; 
-typedef struct treeblock *TreeBlock; 
-typedef struct treebool *TreeBool; 
-typedef struct treebool_1 *TreeBool_1; 
-typedef struct treedecl *TreeDecl; 
-typedef struct treedecls *TreeDecls; 
-typedef struct treeequality *TreeEquality; 
-typedef struct treeequality_1 *TreeEquality_1; 
-typedef struct treeexpr *TreeExpr; 
-typedef struct treeexpr_1 *TreeExpr_1; 
-typedef struct treefactor *TreeFactor; 
-typedef struct treejoin *TreeJoin; 
-typedef struct treejoin_1 *TreeJoin_1; 
-typedef struct treeloc *TreeLoc; 
-typedef struct treeloc_1 *TreeLoc_1; 
-typedef struct treeprogram *TreeProgram; 
-typedef struct treerel *TreeRel; 
-typedef struct treestmt *TreeStmt;
-typedef struct treestmts *TreeStmts; 
-typedef struct treeterm *TreeTerm; 
-typedef struct treeterm_1 *TreeTerm_1; 
-typedef struct treetype *TreeType; 
-typedef struct treetype_1 *TreeType_1; 
-typedef struct treeunary *TreeUnary; 
 
 
 /*

@@ -61,14 +61,18 @@ extern TreeBlock Program(void) {
 static TreeBlock p_block(void)  {
    printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Block		line:'%s'\n", scanner_str() );
    TreeBlock block = 0; // set null by default
-
+   
+   SymtabPush();
+   
    // body
    eat('{');
    TreeDecls l1decls = p_decls();
    TreeStmts l2stmts = p_stmts();
    eat('}');
    block = t_block_decls(l1decls, l2stmts);
-
+   
+   SymtabPop();
+   
    printf(">>>>>>>>>>>>>>>>\nTreeBlock\n");
    // print_TreeBlock(2,block);
    return block;
@@ -116,7 +120,8 @@ static TreeDecl p_decl(void)  {
    TreeId l1id = p_id();
 	
 	// add id to symbol table;
-	
+   SymtabEntry id_entry = SymtabEntryNew(l1id->id, l0type);
+   SymTabPut(l1id->id, id_entry);
 	
    eat(';');
    decl = t_decl_type(l0type, l1id);
