@@ -25,7 +25,7 @@ typedef enum {
     TOK_write,
 } TokenCode;
 
-typedef struct Token {
+typedef struct token {
   char *lexeme;
   TokenCode code;
 } *Token;

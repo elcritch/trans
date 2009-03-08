@@ -7,7 +7,7 @@ extern Token Past(char *arg);
 extern Token Upto(char *arg);
 extern Token Skip(char *arg);
 
-typedef struct TokenEntry {
+typedef struct tokenentry {
   char *name;
   TokenCode code;
   int max;

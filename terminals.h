@@ -3,15 +3,15 @@
 
 
 
-typedef struct TreeId {
+typedef struct treeid {
   char *id;
 } *TreeId;
 
-typedef struct TreeNum {
+typedef struct treenum {
   char *num;
 } *TreeNum;
 
-typedef struct TreeReal {
+typedef struct treereal {
   char *real;
 } *TreeReal;
 

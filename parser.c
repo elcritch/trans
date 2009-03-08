@@ -1,13 +1,17 @@
 #include "tree.h"
 #include "terminals.h"
+#include "printlib.h"
+#include "symtab.h"
+#include "symtaben.h"
+
 #include "scanner/scanner.h"
 #include "scanner/token.h"
-#include "printlib.h"
+
 #include <setjmp.h>
 #include <signal.h>
 #include <string.h>
 
-//make simple
+//!make simple
 
 static TreeBlock p_block(void) ;
 static TreeDecls p_decls(void) ;

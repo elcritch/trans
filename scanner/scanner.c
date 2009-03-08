@@ -17,7 +17,7 @@ typedef struct {
   int lineno;
   int eof;
   char *pos;
-  struct Token curr;
+  struct token curr;
 } Scanner;
 
 static Scanner s;

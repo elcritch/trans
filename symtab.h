@@ -2,9 +2,7 @@
 #define SYMTAB_H
 
 #include "scanner/linkage.h"
-
-typedef struct symtabentry *SymtabEntry;
-
+#include "symtaben.h"
 
 extern LINKAGE void SymtabPush(void);
 extern LINKAGE void SymtabPop(void);

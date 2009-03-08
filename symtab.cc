@@ -3,10 +3,12 @@
 
 #include "symtab.h"
 
-using namespace std;
+// using namespace std;
 
-typedef map<char*,SymtabEntry> ScopeTab;
-typedef vector<ScopeTab*> SymTab;
+typedef std::map<char*,SymtabEntry> ScopeTab;
+typedef std::vector<ScopeTab*> SymTab;
+typedef struct symtabentry *SymtabEntry;
+
 
 static SymTab symtab;
 
