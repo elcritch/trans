@@ -68,6 +68,10 @@ extern int line(void) {
   return s.lineno;
 }
 
+extern char *scanner_str(void) {
+  return s.str;
+}
+
 extern int col(void) {
   return s.pos-s.str;
 }

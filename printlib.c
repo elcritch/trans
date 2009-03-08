@@ -119,6 +119,7 @@ extern void print_TreeStmts( int d, TreeStmts v ) {
 extern void print_TreeStmt( int d, TreeStmt v ) {
    if (!v) return;
    printer_line("Stmt:", d);
+   printf(" from:\"%s\" ",v->str);
    print_tok(d, v->code);
    if (v->code == '{') {
       print_TreeBlock(d+n, v->u.u_block.block);
@@ -254,10 +255,10 @@ extern void print_TreeUnary( int d, TreeUnary v ) {
    printer_line("Unary:", d);
    print_tok(d, v->code);
    if (v->code == '!' || v->code == '-') {
-      print_TreeFactor(d+n, v->u.u_factor.factor);
+      print_TreeUnary(d+n, v->u.u_unary.unary);
    }
    if (v->code == 0) {
-      print_TreeUnary(d+n, v->u.u_unary.unary);
+      print_TreeFactor(d+n, v->u.u_factor.factor);
    }
 }
 

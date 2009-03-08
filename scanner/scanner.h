@@ -9,5 +9,6 @@ extern void eat(TokenCode code);
 
 extern int line(void);
 extern int col(void);
+extern char *scanner_str(void);
 
 #endif

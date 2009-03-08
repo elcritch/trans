@@ -23,9 +23,9 @@ extern TreeId p_id() {
 extern TreeNum p_num() {
 	ALLOC(TreeNum);
 	Token tok = curr();
-	eat(TOK_NUM);
 	v->num = tok->lexeme;
 
+	eat(TOK_NUM);
 	return v;
 }
 
@@ -33,9 +33,9 @@ extern TreeNum p_num() {
 extern TreeReal p_real() {
 	ALLOC(TreeReal);
 	Token tok = curr();
-	eat(TOK_REAL);
 	v->real = tok->lexeme;
 
+	eat(TOK_REAL);
 	return v;
 }
 

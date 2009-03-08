@@ -94,6 +94,7 @@ struct TreeStmts {
 // Structure: stmt [["block", ["block"]], ["break", []], ["do", ["stmt", "bools"]], ["if", ["bools", "stmt"]], ["if", ["bools", "stmt", "stmt"]], ["loc", ["loc", "bools"]], ["read", ["loc"]], ["while", ["bools", "stmt"]], ["write", ["bools"]]]
 struct TreeStmt {
   TokenCode code;
+  char *str;
   union {
     struct {
       TreeBlock block;

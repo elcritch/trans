@@ -29,6 +29,10 @@ test:=./$(prog)
 print_parse: print_parse.o printlib.o parser.o symtaben.o terminals.o tree.o symtab.o $(scanner_objs)
 	gcc $(ccflags) -o $@ $^ $(ldflags)
 
+print: print_parse
+	./print_parse < scope.java | ruby -n liner.rb
+	cat scope.java
+
 $(prog): $(objs)
 	gcc $(ccflags) -o $@ $^ $(ldflags)
 

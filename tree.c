@@ -58,7 +58,7 @@ extern TreeDecls t_decls_decl(TreeDecl decl, TreeDecls decls) {
 // Decl ["type", "id"]
 extern TreeDecl t_decl_type(TreeType type, TreeId id) {
   ALLOC(TreeDecl);
-    v->type = type;
+  v->type = type;
   v->id = id;
   return v;
 }
@@ -150,6 +150,7 @@ extern TreeStmt t_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt) {
 // Stmt ["loc", "bools"]
 extern TreeStmt t_stmt_loc(TreeLoc loc, TreeBool bools) {
   ALLOC(TreeStmt);
+  v->code = TOK_ID;
   v->u.u_loc.loc = loc;
   v->u.u_loc.bools = bools;
   return v;
@@ -371,6 +372,7 @@ extern TreeFactor t_factor_loc(TreeLoc loc) {
 // Factor []
 extern TreeFactor t_factor_num(TreeNum num) {
   ALLOC(TreeFactor);
+  v->code = TOK_NUM;
   v->u.u_num.num = num;
   return v;
 }
@@ -378,6 +380,7 @@ extern TreeFactor t_factor_num(TreeNum num) {
 // Factor []
 extern TreeFactor t_factor_real(TreeReal real) {
   ALLOC(TreeFactor);
+  v->code = TOK_REAL;
   v->u.u_real.real = real;
   return v;
 }
