@@ -91,7 +91,6 @@ extern void print_TreeStmts( int d, TreeStmts v ) {
 
 extern void print_TreeStmt( int d, TreeStmt v ) {
    if (!v) return;
-   fflush(stdout); fflush(stderr);
    printer_line("Stmt:", d);
    printf(" from:\"%s\" ",v->str);
    print_tok(d, v->code);
