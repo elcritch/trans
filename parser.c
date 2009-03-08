@@ -7,7 +7,7 @@
 #include <signal.h>
 #include <string.h>
 
-//make bubble
+//make simple
 
 static TreeBlock p_block(void) ;
 static TreeDecls p_decls(void) ;
