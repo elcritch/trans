@@ -6,34 +6,34 @@
 #include "scanner/error.h"
 #include "scanner/tokenentry.h"
 
-typedef struct TreeBasic *TreeBasic; 
-typedef struct TreeBlock *TreeBlock; 
-typedef struct TreeBool *TreeBool; 
-typedef struct TreeBool_1 *TreeBool_1; 
-typedef struct TreeDecl *TreeDecl; 
-typedef struct TreeDecls *TreeDecls; 
-typedef struct TreeEquality *TreeEquality; 
-typedef struct TreeEquality_1 *TreeEquality_1; 
-typedef struct TreeExpr *TreeExpr; 
-typedef struct TreeExpr_1 *TreeExpr_1; 
-typedef struct TreeFactor *TreeFactor; 
-typedef struct TreeJoin *TreeJoin; 
-typedef struct TreeJoin_1 *TreeJoin_1; 
-typedef struct TreeLoc *TreeLoc; 
-typedef struct TreeLoc_1 *TreeLoc_1; 
-typedef struct TreeProgram *TreeProgram; 
-typedef struct TreeRel *TreeRel; 
-typedef struct TreeStmt *TreeStmt;
-typedef struct TreeStmts *TreeStmts; 
-typedef struct TreeTerm *TreeTerm; 
-typedef struct TreeTerm_1 *TreeTerm_1; 
-typedef struct TreeType *TreeType; 
-typedef struct TreeType_1 *TreeType_1; 
-typedef struct TreeUnary *TreeUnary; 
+typedef struct treebasic *TreeBasic; 
+typedef struct treeblock *TreeBlock; 
+typedef struct treebool *TreeBool; 
+typedef struct treebool_1 *TreeBool_1; 
+typedef struct treedecl *TreeDecl; 
+typedef struct treedecls *TreeDecls; 
+typedef struct treeequality *TreeEquality; 
+typedef struct treeequality_1 *TreeEquality_1; 
+typedef struct treeexpr *TreeExpr; 
+typedef struct treeexpr_1 *TreeExpr_1; 
+typedef struct treefactor *TreeFactor; 
+typedef struct treejoin *TreeJoin; 
+typedef struct treejoin_1 *TreeJoin_1; 
+typedef struct treeloc *TreeLoc; 
+typedef struct treeloc_1 *TreeLoc_1; 
+typedef struct treeprogram *TreeProgram; 
+typedef struct treerel *TreeRel; 
+typedef struct treestmt *TreeStmt;
+typedef struct treestmts *TreeStmts; 
+typedef struct treeterm *TreeTerm; 
+typedef struct treeterm_1 *TreeTerm_1; 
+typedef struct treetype *TreeType; 
+typedef struct treetype_1 *TreeType_1; 
+typedef struct treeunary *TreeUnary; 
 
 
 /*
-struct TreeStmt {
+struct treestmt {
   TokenCode code;
   union {
     struct {
@@ -50,49 +50,49 @@ struct TreeStmt {
 */
 
 // Structure: block [["decls", ["decls", "stmts"]]]
-struct TreeBlock {
+struct treeblock {
   TreeDecls decls;
   TreeStmts stmts;
 };
 
 // Structure: decls [["decl", ["decl", "decls"]]]
-struct TreeDecls {
+struct treedecls {
   TreeDecl decl;
   TreeDecls decls;
 };
 
 // Structure: decl [["type", ["type", "id"]]]
-struct TreeDecl {
+struct treedecl {
   TreeType type;
   TreeId id;
 };
 
 // Structure: type [["basic", ["basic", "type_1"]]]
-struct TreeType {
+struct treetype {
   TreeBasic basic;
   TreeType_1 type_1;
 };
 
 // Structure: type_1 [["num", ["type_1"]]]
-struct TreeType_1 {
+struct treetype_1 {
   TreeType_1 type_1;
   TreeNum num;
 };
 
 // Structure: basic [["float", []], ["int", []]]
-struct TreeBasic {
+struct treebasic {
   TokenCode code;
 };
 
 
 // Structure: stmts [["stmt", ["stmt", "stmts"]]]
-struct TreeStmts {
+struct treestmts {
   TreeStmt stmt;
   TreeStmts stmts;
 };
 
 // Structure: stmt [["block", ["block"]], ["break", []], ["do", ["stmt", "bools"]], ["if", ["bools", "stmt"]], ["if", ["bools", "stmt", "stmt"]], ["loc", ["loc", "bools"]], ["read", ["loc"]], ["while", ["bools", "stmt"]], ["write", ["bools"]]]
-struct TreeStmt {
+struct treestmt {
   TokenCode code;
   char *str;
   union {
@@ -128,49 +128,49 @@ struct TreeStmt {
 
 
 // Structure: loc [["id", ["id", "loc_1"]]]
-struct TreeLoc {
+struct treeloc {
   TreeId id;
   TreeLoc_1 loc_1;
 };
 
 // Structure: loc_1 [["bools", ["bools", "loc_1"]]]
-struct TreeLoc_1 {
+struct treeloc_1 {
   TreeBool bools;
   TreeLoc_1 loc_1;
 };
 
 // Structure: bools [["join", ["join", "bool_1"]]]
-struct TreeBool {
+struct treebool {
   TreeJoin join;
   TreeBool_1 bool_1;
 };
 
 // Structure: bool_1 [["OR", ["join", "bool_1"]]]
-struct TreeBool_1 {
+struct treebool_1 {
   TreeJoin join;
   TreeBool_1 bool_1;
 };
 
 // Structure: join [["equality", ["equality", "join_1"]]]
-struct TreeJoin {
+struct treejoin {
   TreeEquality equality;
   TreeJoin_1 join_1;
 };
 
 // Structure: join_1 [["AND", ["equality", "join_1"]]]
-struct TreeJoin_1 {
+struct treejoin_1 {
   TreeEquality equality;
   TreeJoin_1 join_1;
 };
 
 // Structure: equality [["rel", ["rel", "equality_1"]]]
-struct TreeEquality {
+struct treeequality {
   TreeRel rel;
   TreeEquality_1 equality_1;
 };
 
 // Structure: equality_1 [["EQ", ["rel", "equality_1"]], ["NE", ["rel", "equality_1"]]]
-struct TreeEquality_1 {
+struct treeequality_1 {
   TokenCode code;
   union {
     struct {
@@ -186,7 +186,7 @@ struct TreeEquality_1 {
 
 
 // Structure: rel [["GE", ["expr"]], ["LE", ["expr"]], ["expr", ["expr"]]]
-struct TreeRel {
+struct treerel {
   TokenCode code;
   TreeExpr expr;
   TreeExpr expr_1;
@@ -194,33 +194,33 @@ struct TreeRel {
 
 
 // Structure: expr [["term", ["term", "expr_1"]]]
-struct TreeExpr {
+struct treeexpr {
   TreeTerm term;
   TreeExpr_1 expr_1;
 };
 
 // Structure: expr_1 [["term", ["term", "expr_1"]]]
-struct TreeExpr_1 {
+struct treeexpr_1 {
   TokenCode code;
   TreeTerm term;
   TreeExpr_1 expr_1;
 };
 
 // Structure: term [["unary", ["unary", "term_1"]]]
-struct TreeTerm {
+struct treeterm {
   TreeUnary unary;
   TreeTerm_1 term_1;
 };
 
 // Structure: term_1 [["unary", ["unary", "term_1"]]]
-struct TreeTerm_1 {
+struct treeterm_1 {
   TokenCode code;
   TreeUnary unary;
   TreeTerm_1 term_1;
 };
 
 // Structure: unary [["factor", ["factor"]], ["unary", ["unary"]]]
-struct TreeUnary {
+struct treeunary {
   TokenCode code;
   union {
     struct {
@@ -234,7 +234,7 @@ struct TreeUnary {
 
 
 // Structure: factor [["bools", ["bools"]], ["false", []], ["loc", ["loc"]], ["num", []], ["real", []], ["true", []]]
-struct TreeFactor {
+struct treefactor {
   TokenCode code;
   char *val;
   union {
