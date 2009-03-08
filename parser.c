@@ -82,7 +82,7 @@ static TreeDecls p_decls(void)  {
    TokenCode code = curr()->code;
    
    // check if we have next production, return on zero
-   if ( code != TOK_int && code != TOK_REAL  ) 
+   if ( code != TOK_int && code != TOK_float  ) 
       return decls;
    
    // body
@@ -318,6 +318,10 @@ static TreeStmt p_stmt(void)  {
          break;
       }
       default:
+         printf("Stmt error line:'%s'\n", scanner_str() );
+         TokenCode code = curr()->code;
+         print_tok(3, code);
+         
          error_parse("stmt");
          // longjmp(env,1);
          kill(getpid(),SIGINT);
