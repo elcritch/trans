@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #define ALLOC(t)		  \
-  t v = calloc(1,sizeof(t)); \
+  t v = calloc(1,sizeof(struct t)); \
   if (!v) ERR("malloc() failed")
 
 /**
