@@ -144,7 +144,6 @@ extern TreeStmt t_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt) {
   v->u.u_if.bools = bools;
   v->u.u_if.stmt = stmt;
   v->u.u_if.else_stmt = else_stmt;
-  printf("v->u.u_if.else_stmt == %p\n",v->u.u_if.else_stmt);
   return v;
 }
 
