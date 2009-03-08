@@ -2,8 +2,6 @@
 #define __PRINTLIB_H 1
 #include "tree.h"
 
-extern char *tok_string(int tokid);
-
 extern void print_TreeBlock( int d, TreeBlock v );
 extern void print_TreeDecls( int d, TreeDecls v );
 extern void print_TreeDecl( int d, TreeDecl v );

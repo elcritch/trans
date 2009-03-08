@@ -1,7 +1,7 @@
 #include <stdlib.h>
+#include "scanner/scanner.h"
 #include "terminals.h"
 #include "scanner/token.h"
-#include "scanner/scanner.h"
 #include "scanner/error.h"
 
 #define ALLOC(t)		  \

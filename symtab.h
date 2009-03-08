@@ -2,7 +2,7 @@
 #define SYMTAB_H
 
 #include "scanner/linkage.h"
-// #include "symtaben.h"
+
 typedef struct symtabentry *SymtabEntry;
 
 

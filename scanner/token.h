@@ -30,4 +30,7 @@ typedef struct Token {
   TokenCode code;
 } *Token;
 
+
+extern char *tok_string(TokenCode tokid);
+
 #endif

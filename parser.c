@@ -7,7 +7,7 @@
 #include <signal.h>
 #include <string.h>
 
-//make print
+//make bubble
 
 static TreeBlock p_block(void) ;
 static TreeDecls p_decls(void) ;
@@ -66,7 +66,7 @@ static TreeBlock p_block(void)  {
    block = t_block_decls(l1decls, l2stmts);
 
    printf(">>>>>>>>>>>>>>>>\nTreeBlock\n");
-   print_TreeBlock(2,block);
+   // print_TreeBlock(2,block);
    return block;
 }
 
@@ -80,20 +80,20 @@ static TreeDecls p_decls(void)  {
    printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Decls		line:'%s'\n", scanner_str() );
    TreeDecls decls = 0; // set null by default
    TokenCode code = curr()->code;
-   // body
-	TreeDecl l0decl = p_decl();
    
    // check if we have next production, return on zero
-   code = curr()->code;
    if ( code != TOK_int && code != TOK_REAL  ) 
-      return t_decls_decl(l0decl, 0);
-	
-	// if found type then another type continue
+      return decls;
+   
+   // body
+   TreeDecl l0decl = p_decl();
+   
+   // if found type then another type continue
    TreeDecls l1decls = p_decls();
    decls = t_decls_decl(l0decl, l1decls);
-  	
+   
    printf(">>>>>>>>>>>>>>>>\nTreeDecls\n");
-   print_TreeDecls(2,decls);
+   // print_TreeDecls(2,decls);
    return decls;
 }
 
@@ -118,7 +118,7 @@ static TreeDecl p_decl(void)  {
    decl = t_decl_type(l0type, l1id);
 
    printf(">>>>>>>>>>>>>>>>\nTreeDecl\n");
-   print_TreeDecl(2,decl);
+   // print_TreeDecl(2,decl);
    return decl;
 }
 
@@ -138,7 +138,7 @@ static TreeType p_type(void)  {
    type = t_type_basic(l0basic, l1type_1);
    
    printf(">>>>>>>>>>>>>>>>\nTreeType\n");
-   print_TreeType(2,type);
+   // print_TreeType(2,type);
    return type;
 }
 
@@ -170,7 +170,7 @@ static TreeType_1 p_type_1(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeType_1\n");
-   print_TreeType_1(2,type_1);
+   // print_TreeType_1(2,type_1);
    return type_1;
 }
 
@@ -206,7 +206,7 @@ static TreeBasic p_basic(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeBasic\n");
-   print_TreeBasic(2,basic);
+   // print_TreeBasic(2,basic);
    return basic;
 }
 
@@ -230,7 +230,7 @@ static TreeStmts p_stmts(void)  {
    stmts = t_stmts_stmt(l0stmt, l1stmts);
 
    printf(">>>>>>>>>>>>>>>>\nTreeStmts\n");
-   print_TreeStmts(2,stmts);
+   // print_TreeStmts(2,stmts);
    return stmts;
 }
 
@@ -326,7 +326,7 @@ static TreeStmt p_stmt(void)  {
 
    if (stmt) stmt->str = str;
    printf(">>>>>>>>>>>>>>>>\nTreeStmt\n");
-   print_TreeStmt(2,stmt);
+   // print_TreeStmt(2,stmt);
    return stmt;
 }
 
@@ -347,7 +347,7 @@ static TreeLoc p_loc(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeLoc\n");
-   print_TreeLoc(2,loc);
+   // print_TreeLoc(2,loc);
    return loc;
 }
 
@@ -379,7 +379,7 @@ static TreeLoc_1 p_loc_1(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeLoc_1\n");
-   print_TreeLoc_1(2,loc_1);
+   // print_TreeLoc_1(2,loc_1);
    return loc_1;
 }
 
@@ -400,7 +400,7 @@ static TreeBool p_bool(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeBool\n");
-   print_TreeBool(2,bool);
+   // print_TreeBool(2,bool);
    return bool;
 }
 
@@ -430,7 +430,7 @@ static TreeBool_1 p_bool_1(void)  {
    }
    
    printf(">>>>>>>>>>>>>>>>\nTreeBool_1\n");
-   print_TreeBool_1(2,bool_1);
+   // print_TreeBool_1(2,bool_1);
    return bool_1;
 }
 
@@ -451,7 +451,7 @@ static TreeJoin p_join(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeJoin\n");
-   print_TreeJoin(2,join);
+   // print_TreeJoin(2,join);
    return join;
 }
 
@@ -482,7 +482,7 @@ static TreeJoin_1 p_join_1(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeJoin_1\n");
-   print_TreeJoin_1(2,join_1);
+   // print_TreeJoin_1(2,join_1);
    return join_1;
 }
 
@@ -503,7 +503,7 @@ static TreeEquality p_equality(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeEquality\n");
-   print_TreeEquality(2,equality);
+   // print_TreeEquality(2,equality);
    return equality;
 }
 
@@ -541,7 +541,7 @@ static TreeEquality_1 p_equality_1(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeEquality_1\n");
-   print_TreeEquality_1(2,equality_1);
+   // print_TreeEquality_1(2,equality_1);
    return equality_1;
 }
 
@@ -554,9 +554,10 @@ static TreeEquality_1 p_equality_1(void)  {
 static TreeRel p_rel(void)  {
    printf("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<\n  trace:  Rel		line:'%s'\n", scanner_str() );
    TreeRel rel = 0; // set null by default
-   TokenCode code = curr()->code;
    // cases
    TreeExpr l0expr = p_expr(); // common
+
+   TokenCode code = curr()->code;
    switch (code) {
       case '<': {  
          eat('<');
@@ -590,7 +591,7 @@ static TreeRel p_rel(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeRel\n");
-   print_TreeRel(2,rel);
+   // print_TreeRel(2,rel);
    return rel;
 }
 
@@ -611,7 +612,7 @@ static TreeExpr p_expr(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeExpr\n");
-   print_TreeExpr(2,expr);
+   // print_TreeExpr(2,expr);
    return expr;
 }
 
@@ -649,7 +650,7 @@ static TreeExpr_1 p_expr_1(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeExpr_1\n");
-   print_TreeExpr_1(2,expr_1);
+   // print_TreeExpr_1(2,expr_1);
    return expr_1;
 }
 
@@ -670,7 +671,7 @@ static TreeTerm p_term(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeTerm\n");
-   print_TreeTerm(2,term);
+   // print_TreeTerm(2,term);
    return term;
 }
 
@@ -708,7 +709,7 @@ static TreeTerm_1 p_term_1(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeTerm_1\n");
-   print_TreeTerm_1(2,term_1);
+   // print_TreeTerm_1(2,term_1);
    return term_1;
 }
 
@@ -746,7 +747,7 @@ static TreeUnary p_unary(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeUnary\n");
-   print_TreeUnary(2,unary);
+   // print_TreeUnary(2,unary);
    return unary;
 }
 
@@ -804,7 +805,7 @@ static TreeFactor p_factor(void)  {
 
    
    printf(">>>>>>>>>>>>>>>>\nTreeFactor\n");
-   print_TreeFactor(2,factor);
+   // print_TreeFactor(2,factor);
    return factor;
 }
 

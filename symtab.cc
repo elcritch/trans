@@ -2,8 +2,6 @@
 #include <vector>
 
 #include "symtab.h"
-// #include "symtaben.h"
-#include "scanner/error.h"
 
 using namespace std;
 

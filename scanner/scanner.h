@@ -3,9 +3,11 @@
 
 #include "token.h"
 
+#define eat(code) eat_(code,(char *)__FILE__,__LINE__)
+
 extern Token next(void);
 extern Token curr(void);
-extern void eat(TokenCode code);
+extern void eat_(TokenCode code, char *file_, int line_);
 
 extern int line(void);
 extern int col(void);

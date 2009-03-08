@@ -9,7 +9,7 @@
 #include "tokenentry.h"
 #include "strtab.h"
 #include "error.h"
-
+//make scanner
 extern TokenEntry in_word_set(char *str, unsigned int len);
 
 typedef struct {
@@ -58,9 +58,9 @@ extern Token curr(void) {
   return &s.curr;
 }
 
-extern void eat(TokenCode code) {
+extern void eat_(TokenCode code, char *file_, int line_) {
   if (!curr() || code!=curr()->code)
-    error_scan(code);
+    error_scan(code, curr()->code, file_, line_);
   next();
 }
 
