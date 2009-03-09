@@ -13,6 +13,38 @@
 #define emit_comm(msg) printf("\t\t# "msg"\n")
 #define emit_commf(msg, args...) printf("\t\t# "msg"\n", args)
 
+
+static void g_id(TreeId var);
+static void g_block(TreeBlock var);
+static void g_decls(TreeDecls var);
+static void g_decl(TreeDecl var);
+static void g_stmts(TreeStmts var);
+static void g_stmt(TreeStmt v);
+static void g_stmt_loc(TreeLoc loc, TreeBool bools);
+static void g_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt);
+static void g_stmt_while(TreeBool bools, TreeStmt stmt);
+static void g_stmt_do(TreeStmt stmt, TreeBool bools);
+static void g_stmt_break();
+static void g_stmt_block(TreeBlock block);
+static void g_stmt_read(TreeLoc loc);
+static void g_stmt_write(TreeBool bools);
+static void g_loc(TreeLoc var);
+static void g_loc_1(TreeLoc_1 var);
+static Type g_bools(TreeBool var);
+static Type g_bool_1(TreeBool_1 var);
+static Type g_join(TreeJoin var);
+static Type g_join_1(TreeJoin_1 var);
+static Type g_equality(TreeEquality var);
+static Type g_equality_1(TreeEquality_1 var);
+static Type g_rel(TreeRel var);
+static Type g_expr(TreeExpr var);
+static Type g_expr_1(TreeExpr_1 var);
+static Type g_term(TreeTerm var);
+static Type g_term_1(TreeTerm_1 var);
+static Type g_unary(TreeUnary var);
+static Type g_factor(TreeFactor var);
+
+
 // ====================================================================
 extern void generate(TreeBlock block) {
    if (!block) return;
@@ -108,7 +140,7 @@ static void g_stmt(TreeStmt v) {
 static void g_stmt_loc(TreeLoc loc, TreeBool bools) {
    g_id(loc->id);
    Type ret = g_bools(bools);
-   printf("# pointer: %p\n",ret);
+   ret = ret;
    emit_ins1("st");
 }
 
@@ -160,7 +192,7 @@ static void g_loc_1(TreeLoc_1 var) {
 static Type g_bools(TreeBool var) {
    Type ret = 0; 
    GEN(join);
-   GEN(bool_1);
+   OPT_GEN(bool_1);
    
    return ret;
 }
@@ -169,7 +201,7 @@ static Type g_bools(TreeBool var) {
 static Type g_bool_1(TreeBool_1 var) {
    Type ret = 0; 
    GEN(join);
-   GEN(bool_1);
+   OPT_GEN(bool_1);
 
    
    return ret;
@@ -179,7 +211,7 @@ static Type g_bool_1(TreeBool_1 var) {
 static Type g_join(TreeJoin var) {
    Type ret = 0; 
    GEN(equality);
-   GEN(join_1);
+   OPT_GEN(join_1);
 
    
    return ret;
@@ -189,7 +221,7 @@ static Type g_join(TreeJoin var) {
 static Type g_join_1(TreeJoin_1 var) {
    Type ret = 0; 
    GEN(equality);
-   GEN(join_1);
+   OPT_GEN(join_1);
 
    
    return ret;
@@ -199,8 +231,7 @@ static Type g_join_1(TreeJoin_1 var) {
 static Type g_equality(TreeEquality var) {
    Type ret = 0; 
    GEN(rel);
-   GEN(equality_1);
-
+   OPT_GEN(equality_1);
    
    return ret;
 }
@@ -250,7 +281,7 @@ static Type g_rel(TreeRel var) {
 static Type g_expr(TreeExpr var) {
    Type ret = 0; 
    GEN(term);
-   GEN(expr_1);   
+   OPT_GEN(expr_1);   
    
    return ret;
 }
@@ -268,7 +299,7 @@ static Type g_expr_1(TreeExpr_1 var) {
 static Type g_term(TreeTerm var) {
    Type ret = 0; 
    GEN(unary);
-   GEN(term_1);
+   OPT_GEN(term_1);
    
    return ret;
 }

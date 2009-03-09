@@ -202,7 +202,7 @@ extern void print_TreeRel( int d, TreeRel v ) {
    printer_line("Rel:", d);
    print_tok(d, v->code);
    print_TreeExpr(d+n, v->expr);
-   print_TreeExpr(d+n, v->expr_1);
+   print_TreeExpr(d+n, v->expr1);
 }
 
 extern void print_TreeExpr( int d, TreeExpr v ) {

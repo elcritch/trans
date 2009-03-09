@@ -7,6 +7,7 @@ scanner_objs+=scanner/error.o scanner/scanner.o  scanner/strtab.o   scanner/toke
 
 # ccflags+=-MMD -g -Wall
 ccflags+=-g -Wall -std=c99
+cccflags+=-g -Wall
 ldflags+=-lreadline -lncurses -lstdc++
 
 test:=./$(prog)
@@ -24,7 +25,10 @@ test:=./$(prog)
 	gcc $(ccflags) -c $<
 
 %.o: %.cc
-	g++ $(ccflags) -c $<
+	g++ $(cccflags) -c $<
+
+generate: main.o generator.o printlib.o parser.o symtaben.o terminals.o tree.o symtab.o $(scanner_objs)
+	gcc $(ccflags) -o $@ $^ $(ldflags)
 
 print_parse: print_parse.o printlib.o parser.o symtaben.o terminals.o tree.o symtab.o $(scanner_objs)
 	gcc $(ccflags) -o $@ $^ $(ldflags)

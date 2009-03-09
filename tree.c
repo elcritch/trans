@@ -274,11 +274,11 @@ extern TreeEquality_1 t_equality_1_NE(TreeRel rel, TreeEquality_1 equality_1) {
 // ================= Rel 2 ========================================
 
 // Rel ["code", "expr", "expr"]
-extern TreeRel t_rel(TokenCode code, TreeExpr expr, TreeExpr expr_1) {
+extern TreeRel t_rel(TokenCode code, TreeExpr expr, TreeExpr expr1) {
   ALLOC(treerel);
   v->code = code;
   v->expr = expr;
-  v->expr_1 = expr_1;
+  v->expr1 = expr1;
   return v;
 }
 

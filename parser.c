@@ -45,7 +45,7 @@ jmp_buf env;
    Grammar:
       Program : block 
 */
-extern TreeBlock Program(void) {
+extern TreeBlock parse(void) {
    // setjmp(env);
    SYM_OFFSET = 0;
    SYM_DEPTH = 0;
@@ -128,6 +128,7 @@ static TreeDecl p_decl(void)  {
    SymTabPut(l1id->id, id_entry);
    printf("decl: Adding Symtable Entry: %p\n", id_entry);
    print_SymtabEntry(2,id_entry);
+   l1id->entry = id_entry;
    
    eat(';');
    decl = t_decl_type(l0type, l1id);

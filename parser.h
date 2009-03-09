@@ -2,7 +2,7 @@
 #define __PARSER_H 1
 
 
-extern TreeBlock Program(void);
+extern TreeBlock parse(void);
 
 
 #endif

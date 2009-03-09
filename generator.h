@@ -7,36 +7,6 @@ typedef struct gen_type *Type;
 
 extern void generate(TreeBlock block);
 
-static void g_id(TreeId var);
-static void g_block(TreeBlock var);
-static void g_decls(TreeDecls var);
-static void g_decl(TreeDecl var);
-static void g_stmts(TreeStmts var);
-static void g_stmt(TreeStmt v);
-static void g_stmt_loc(TreeLoc loc, TreeBool bools);
-static void g_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt);
-static void g_stmt_while(TreeBool bools, TreeStmt stmt);
-static void g_stmt_do(TreeStmt stmt, TreeBool bools);
-static void g_stmt_break();
-static void g_stmt_block(TreeBlock block);
-static void g_stmt_read(TreeLoc loc);
-static void g_stmt_write(TreeBool bools);
-static void g_loc(TreeLoc var);
-static void g_loc_1(TreeLoc_1 var);
-static Type g_bools(TreeBool var);
-static Type g_bool_1(TreeBool_1 var);
-static Type g_join(TreeJoin var);
-static Type g_join_1(TreeJoin_1 var);
-static Type g_equality(TreeEquality var);
-static Type g_equality_1(TreeEquality_1 var);
-static Type g_rel(TreeRel var);
-static Type g_expr(TreeExpr var);
-static Type g_expr_1(TreeExpr_1 var);
-static Type g_term(TreeTerm var);
-static Type g_term_1(TreeTerm_1 var);
-static Type g_unary(TreeUnary var);
-static Type g_factor(TreeFactor var);
-
 /*
 static void g_stmt(TreeStmt stmt) {
   if (!stmt)
