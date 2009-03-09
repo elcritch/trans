@@ -90,60 +90,97 @@ static void g_stmt_write(TreeBool bools) {
 
 
 // ====================================================================
-static void g_loc(TreeId id, TreeLoc_1 loc_1) {
-   Type ret;
-}
-static void g_loc_1(TreeBool bools, TreeLoc_1 loc_1) {
-   Type ret;
-   gen(bools, join, bools_1);
-   gen(loc_1, bools, loc_1);
+// Structure: loc [["id", ["id", "loc_1"]]]
+static Type g_loc(TreeLoc loc) {
+   Type ret; 
+   TreeId id = var->id;
+   g_id(id);
+   TreeLoc_1 loc_1 = var->loc_1;
+   g_loc_1(loc_1);
 
 }
 
-// ====================================================================
-static void g_bool(TreeJoin join, TreeBool_1 bool_1) {
-   Type ret;
-   gen(join, equality, join_1);
-   gen(bool_1, equality, join_1);
-
-}
-static void g_bool_1(TreeJoin join, TreeBool_1 bool_1) {
-   Type ret;
-   gen(join, equality, join_1);
-   gen(bool_1, join, bool_1);
+// Structure: loc_1 [["bools", ["bools", "loc_1"]]]
+static Type g_loc_1(TreeLoc_1 loc_1) {
+   Type ret; 
+   TreeBool bools = var->bools;
+   g_bools(bools);
+   TreeLoc_1 loc_1 = var->loc_1;
+   g_loc_1(loc_1);
 
 }
 
-// ====================================================================
-static void g_join(TreeEquality equality, TreeJoin_1 join_1) {
-   Type ret;
-   gen(equality, rel, equality_1);
-   gen(join_1, equality, join_1);
+// Structure: bools [["join", ["join", "bool_1"]]]
+static Type g_bool(TreeBool bool) {
+   Type ret; 
+   TreeJoin join = var->join;
+   g_join(join);
+   TreeBool_1 bool_1 = var->bool_1;
+   g_bool_1(bool_1);
 
 }
 
-static void g_join_1(TreeEquality equality, TreeJoin_1 join_1) {
-   Type ret;
-   gen(equality, rel, equality_1);
-   gen(join_1, equality, join_1);
+// Structure: bool_1 [["OR", ["join", "bool_1"]]]
+static Type g_bool_1(TreeBool_1 bool_1) {
+   Type ret; 
+   TreeJoin join = var->join;
+   g_join(join);
+   TreeBool_1 bool_1 = var->bool_1;
+   g_bool_1(bool_1);
 
 }
 
+// Structure: join [["equality", ["equality", "join_1"]]]
+static Type g_join(TreeJoin join) {
+   Type ret; 
+   TreeEquality equality = var->equality;
+   g_equality(equality);
+   TreeJoin_1 join_1 = var->join_1;
+   g_join_1(join_1);
 
-// ====================================================================
-static void g_equality(TreeRel rel, TreeEquality_1 equality_1) {
-   Type ret;
+}
+
+// Structure: join_1 [["AND", ["equality", "join_1"]]]
+static Type g_join_1(TreeJoin_1 join_1) {
+   Type ret; 
+   TreeEquality equality = var->equality;
+   g_equality(equality);
+   TreeJoin_1 join_1 = var->join_1;
+   g_join_1(join_1);
+
+}
+
+// Structure: equality [["rel", ["rel", "equality_1"]]]
+static Type g_equality(TreeEquality equality) {
+   Type ret; 
+   TreeRel rel = var->rel;
    g_rel(rel);
-   g_equality_1(TreeRel rel);
-   
+   TreeEquality_1 equality_1 = var->equality_1;
+   g_equality_1(equality_1);
+
 }
 
-static void g_equality_1(TreeRel rel, TreeEquality_1 equality_1) {
-   Type ret;
-   g_rel(rel);
-   gen_union(equality_1, );
-   
+// Structure: equality_1 [["EQ", ["rel", "equality_1"]], ["NE", ["rel", "equality_1"]]]
+static Type g_equality_1(TreeEquality_1 equality_1) {
+   Type ret; 
+  TokenCode code = equality_1->code;
+  
+  switch(code) {
+    case TOK_EQ: {
+      equality_1->u_EQ->rel;
+      equality_1->u_EQ->equality_1;
+    } ;
+    case TOK_NE: {
+      equality_1->u_NE.rel;
+      equality_1->u_NE.equality_1;
+    }
+  }
+
 }
+
+
+// ====================================================================
+
 
 static Type g_rel(TreeRel rel) {
    Type ret;
@@ -179,35 +216,32 @@ static Type g_rel(TreeRel rel) {
 
 
 // ====================================================================
-static void g_expr(TreeTerm term, TreeExpr_1 expr_1) {
+static void g_expr(TreeExpr var) {
    Type ret;
-   
-   gen_struct2(term, unary, term_1);
-   gen_struct3(expr_1, code, term, expr_1);
-
+   g_term(var->term);
+   g_expr_1(var->expr_1);   
 }
 
-static Type t_expr_1_term(TokenCode code, TreeTerm term, TreeExpr_1 expr_1) {
+static void g_expr_1(TreeExpr_1 var) {
    Type ret;
-   
-   gen_struct2(term, unary, term_1);
-   opt_gen_struct3(expr_1, code, term, expr_1);
-   
-}
+  g_term(var->term);
+  g_expr_1(var->expr_1);
+};
 
 
 // ====================================================================
-static void g_term(TreeUnary unary, TreeTerm_1 term_1) {
+static void g_term(TreeTerm var) {
    Type ret;
-   
-   gen_union(unary, unary);
-   gen_struct3(term_1, code, unary, term_1);
+   g_unary(var->unary);
+   g_term_1(var->term_1);
 }
 
-static Type g_term_1(TokenCode code, TreeUnary unary, TreeTerm_1 term_1) {
+static Type g_term_1(TreeTerm_1 var) {
    Type ret;   
    
-   gen_union(unary, unary);
+   TokenCode code = var->code;
+   TreeUnary unary = var->unary;
+   TreeTerm_1 term_1 = var->term_1;
    
    switch (code) {
       case '*' {
@@ -224,16 +258,13 @@ static Type g_term_1(TokenCode code, TreeUnary unary, TreeTerm_1 term_1) {
       }
    }
    
-   opt_gen_struct3(term_1, code, unary, term_1);
+   GEN(term_1);
    
 }
 
 
 // ====================================================================
 static Type g_unary(TreeUnary unary) {
-   Type ret;
-   if (!factor) return;
-   
    Type ret;
    TokenCode code = factor->code;
    
@@ -257,8 +288,6 @@ static Type g_unary(TreeUnary unary) {
 
 // ====================================================================
 static Type g_factor(TreeFactor factor) {
-   if (!factor) return;
-   
    Type ret;
    TokenCode code = factor->code;
    
@@ -267,7 +296,7 @@ static Type g_factor(TreeFactor factor) {
    
    switch (code) {
       case '(': {  
-         gen_struct2(bools, join, bool_1);
+         g_bools( join, bool_1);
          break;
       }
       case TOK_ID: {  //===== REDUCED TOK_loc
