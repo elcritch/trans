@@ -1,0 +1,18 @@
+var id:'x'
+parse error: Cannot find var entry! (line: 6, char 2)
+var id:'x'
+parse error: Cannot find var entry! (line: 8, char 2)
+		push		$beg
+		jmp
+		$v1:		-1
+		$beg:
+		push		$v1
+		push		$sp
+		push		0
+		add
+		st
+		push		$v1
+		push		$sp
+		push		1
+		add
+		st

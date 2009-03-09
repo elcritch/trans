@@ -1,0 +1,16 @@
+		push		$beg
+		jmp
+		$v1:		-1
+		$beg:
+		push		$v1
+		push		$sp
+		push		0
+		add
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		st

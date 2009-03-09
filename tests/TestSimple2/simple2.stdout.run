@@ -1,0 +1,4 @@
+var id:'x'
+parse error: Cannot find var entry! (line: 6, char 2)
+var id:'x'
+parse error: Cannot find var entry! (line: 8, char 2)
