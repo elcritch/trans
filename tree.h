@@ -233,10 +233,7 @@ struct treefactor {
   } u;
 };
 
-// 
-extern TreeStmt t_stmt_assign(TreeLoc loc, TreeBool bools);
-extern TreeStmt t_stmt_while(TreeBool bools, TreeStmt stmt);
-extern TreeStmt t_stmt_break();
+// tree.c functions
 extern TreeBlock t_block_decls(TreeDecls decls, TreeStmts stmts);
 extern TreeDecls t_decls_decl(TreeDecl decl, TreeDecls decls);
 extern TreeDecl t_decl_type(TreeType type, TreeId id);
