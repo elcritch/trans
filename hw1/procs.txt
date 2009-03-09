@@ -1,0 +1,15 @@
+Memory
+
+$fps:	0
+$var0:
+	push	$fps
+	push	0
+	add
+	push	$sp
+	ld
+	st
+	push	$sp
+	dup
+	ld
+	push	3
+	add

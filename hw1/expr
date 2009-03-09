@@ -1,0 +1,4 @@
+#!/bin/bash
+
+xargs /opt/local/bin/expr
+

@@ -1,0 +1,32 @@
+ASM Commands:  
+Command |  Arguments  |  Actions
+  ld    |  ST1        |  loads ST1 from memory onto the stack
+  st    |  ST1 ST2    |  store ST1 into memory location ST2
+  push  |  ARG/CONST  |  push ARG onto stack
+  pop   |  ST1        |  pops (removes) ST1
+  dup   |  ST1        |  duplicates ST1 into ST1, ST2
+  swap  |  ST1 ST2    |  swaps ST1, ST2 to ST2, ST1. 
+  add   |  ST1 ST2    |  adds last two values on stack
+  sub   |  ST1 ST2    |  subtracts last two values on stack
+  mul   |  ST1 ST2    |  multiplies last two values on stack
+  div   |  ST1 ST2    |  divides last two values on stack
+  mod   |  ST1 ST2    |  takes the mode of last two values on stack
+  not   |  ST1        |  not of last stack value
+  jmp   |  ST1        |  jumps to last value on stack
+  jz    |  ST1 ST2    |  jumps to ST1 if ST2 == 0
+  jp    |  ST1 ST2    |  jumps to ST1 if ST2 > 0
+  jn    |  ST1 ST2    |  jumps to ST1 if ST2 < 0
+  rd    |  n/a        |  reads from stdin
+  wr    |  ST1        |  writes to stdout
+  stop  |  n/a        |  indicates end of current program
+ 
+TABLE KEY: Arguments are listed in terms of either stack location (ST) with 
+ST1 and ST2 being the top and second from top elements on the stack, 
+respectively. CONST indicates a constant number from ASM code. n/a implies
+that the arguement takes no arguments.
+
+
+Load Memory address and store value '100' in it
+	push	$v0  	# put address $v0 then read into this address
+	push	100
+	st
