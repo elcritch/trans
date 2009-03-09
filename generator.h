@@ -2,73 +2,38 @@
 #include "printlib.h"
 
 // ====================================================================
+typedef struct gen_type *Type;
+
 extern void generate(TreeBlock block);
 
-void g_block(TreeDecls decls, TreeStmts stmts);
-
-// ====================================================================
-void g_decls(TreeDecl decl, TreeDecls decls);
-void g_decl(TreeId id);
-
-
-// ====================================================================
-void g_stmts(TreeStmt stmt, TreeStmts stmts);
-
-// ====================================================================
-void g_stmt(TreeStmt stmt);
-
-void g_stmt_loc(TreeLoc loc, TreeBool bools);
-
-void g_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt);
-
-void g_stmt_while(TreeBool bools, TreeStmt stmt);
-
-void g_stmt_do(TreeStmt stmt, TreeBool bools);
-
-void g_stmt_break();
-
-void g_stmt_block(TreeBlock block);
-
-void g_stmt_read(TreeLoc loc);
-
-void g_stmt_write(TreeBool bools);
-
-
-// ====================================================================
-Type g_loc(TreeId id, TreeLoc_1 loc_1);
-Type g_loc_1(TreeBool bools, TreeLoc_1 loc_1);
-
-// ====================================================================
-Type g_bool(TreeJoin join, TreeBool_1 bool_1);
-Type g_bool_1(TreeJoin join, TreeBool_1 bool_1);
-
-// ====================================================================
-Type g_join(TreeEquality equality, TreeJoin_1 join_1);
-Type g_join_1(TreeEquality equality, TreeJoin_1 join_1);
-
-
-// ====================================================================
-Type g_equality(TreeRel rel, TreeEquality_1 equality_1);
-Type g_rel(TokenCode code, TreeExpr expr1, TreeExpr expr2);
-
-
-// ====================================================================
-Type g_expr(TreeTerm term, TreeExpr_1 expr_1);
-Type t_expr_1_term(TokenCode code, TreeTerm term, TreeExpr_1 expr_1);
-
-
-// ====================================================================
-Type g_term(TreeUnary unary, TreeTerm_1 term_1);
-Type g_term_1(TokenCode code, TreeUnary unary, TreeTerm_1 term_1);
-
-// ====================================================================
-Type g_unary_factor(TreeFactor factor);
-Type g_unary_unary(TokenCode code, TreeUnary unary);
-
-
-// ====================================================================
-Type g_factor(TreeFactor factor);
-
+static void g_block(TreeBlock var);
+static void g_decls(TreeDecls var);
+static void g_decl(TreeDecl var);
+static void g_stmts(TreeStmts var);
+static void g_stmt(TreeStmt v);
+static void g_stmt_loc(TreeLoc loc, TreeBool bools);
+static void g_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt);
+static void g_stmt_while(TreeBool bools, TreeStmt stmt);
+static void g_stmt_do(TreeStmt stmt, TreeBool bools);
+static void g_stmt_break();
+static void g_stmt_block(TreeBlock block);
+static void g_stmt_read(TreeLoc loc);
+static void g_stmt_write(TreeBool bools);
+static void g_loc(TreeLoc var);
+static void g_loc_1(TreeLoc_1 var);
+static Type g_bools(TreeBool var);
+static Type g_bool_1(TreeBool_1 var);
+static Type g_join(TreeJoin var);
+static Type g_join_1(TreeJoin_1 var);
+static Type g_equality(TreeEquality var);
+static Type g_equality_1(TreeEquality_1 var);
+static Type g_rel(TreeRel var);
+static Type g_expr(TreeExpr var);
+static Type g_expr_1(TreeExpr_1 var);
+static Type g_term(TreeTerm var);
+static Type g_term_1(TreeTerm_1 var);
+static Type g_unary(TreeUnary var);
+static Type g_factor(TreeFactor var);
 
 /*
 static void g_stmt(TreeStmt stmt) {

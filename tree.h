@@ -72,29 +72,29 @@ struct treestmt {
   char *str;
   union {
     struct {
-      TreeBlock block;
-    } u_block;
-    /* omitting empty rule: break */
-    struct {
-      TreeStmt stmt;
+      TreeLoc loc;
       TreeBool bools;
-    } u_do;
+    } u_loc;
     struct {
       TreeBool bools;
       TreeStmt stmt;
       TreeStmt else_stmt;
     } u_if;
     struct {
-      TreeLoc loc;
-      TreeBool bools;
-    } u_loc;
-    struct {
-      TreeLoc loc;
-    } u_read;
-    struct {
       TreeBool bools;
       TreeStmt stmt;
     } u_while;
+    struct {
+      TreeStmt stmt;
+      TreeBool bools;
+    } u_do;
+    /* omitting empty rule: break */
+    struct {
+      TreeBlock block;
+    } u_block;
+    struct {
+      TreeLoc loc;
+    } u_read;
     struct {
       TreeBool bools;
     } u_write;
@@ -164,7 +164,7 @@ struct treeequality_1 {
 struct treerel {
   TokenCode code;
   TreeExpr expr;
-  TreeExpr expr_1;
+  TreeExpr expr1;
 };
 
 
