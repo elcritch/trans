@@ -1,4 +1,5 @@
 #include "tree.h"
+#include "terminals.h"
 #include "printlib.h"
 
 // ====================================================================
@@ -6,6 +7,7 @@ typedef struct gen_type *Type;
 
 extern void generate(TreeBlock block);
 
+static void g_id(TreeId var);
 static void g_block(TreeBlock var);
 static void g_decls(TreeDecls var);
 static void g_decl(TreeDecl var);

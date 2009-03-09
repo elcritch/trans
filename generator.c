@@ -4,13 +4,23 @@
 #define GEN(name) g_##name(var->name)
 #define OPT_GEN(name) if (var->name) g_##name(var->name)
 
-void emit_inst(char *inst);
-void emit_inst2(char *inst, char *arg);
+#define emit_ins1(inst) printf("\t\t"inst"\n")
+#define emit_ins2(inst, arg) printf("\t\t"inst"\t\t"arg"\n")
+
+#define emit_ins1f(inst, args...) printf("\t\t"inst"\n", args)
+#define emit_ins2f(inst, arg, args...) printf("\t\t"inst"\t\t"arg"\n", args)
+
+#define emit_comm(msg) printf("\t\t# "msg"\n")
+#define emit_commf(msg, args...) printf("\t\t# "msg"\n", args)
 
 // ====================================================================
 extern void generate(TreeBlock block) {
    if (!block) return;
       
+   for(size_t i = 0; i < SYM_MAX_DEPTH; ++i)
+   {
+      emit_ins1f("$view%lu:", i+1); // make variable storage for stack
+   }
    g_block(block);
    
 }
@@ -26,10 +36,30 @@ static void g_decls(TreeDecls var) {
    GEN(decl);
    OPT_GEN(decls);
 }
+
 static void g_decl(TreeDecl var) {
    
+   SymtabEntry entry = var->id->entry;
+   
+   emit_ins2f("push","$v%d", entry->depth);	// store in viewport 1
+   emit_ins2("push","$sp");   // store stack+1 in $v1
+   emit_ins2f("push", "%d", entry->offset);   // var offset
+   emit_ins1("add");
+   emit_ins1("st");  // now location of stack 1 is stored in $v1
+	
 }
 
+static void g_id(TreeId var) {
+   char *id = var->id;
+   SymtabEntry entry = var->entry;
+   
+   emit_commf("%s",id);
+   emit_ins2f("push","$view%d", entry->depth);
+   emit_ins1("ld");
+	emit_ins2f("push","%d", entry->offset);
+   emit_ins1("add");
+   
+}
 
 // ====================================================================
 // ====================================================================
@@ -76,7 +106,10 @@ static void g_stmt(TreeStmt v) {
 // ====================================================================
 
 static void g_stmt_loc(TreeLoc loc, TreeBool bools) {
-
+   g_id(loc->id);
+   Type ret = g_bools(bools);
+   printf("# pointer: %p\n",ret);
+   emit_ins1("st");
 }
 
 static void g_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt) {
@@ -250,11 +283,11 @@ static Type g_term_1(TreeTerm_1 var) {
    
    switch (code) {
       case '*': {
-         emit_inst("mul");
+         emit_ins1("mul");
          break;
       } 
       case '/': {
-         emit_inst("div");
+         emit_ins1("div");
          break;
       } 
       default: {
@@ -275,12 +308,12 @@ static Type g_unary(TreeUnary var) {
    switch (code) {
       case '!': {  
          g_unary(var->u.u_unary.unary);
-         emit_inst("not");
+         emit_ins1("not");
          break;
       }
       case '-': {
          g_unary(var->u.u_unary.unary);
-         emit_inst("sub");
+         emit_ins1("sub");
       }
       default: {
          g_factor(var->u.u_factor.factor);
@@ -310,19 +343,19 @@ static Type g_factor(TreeFactor var) {
          break;
       }
       case TOK_NUM: {
-         emit_inst2("push",var->u.u_num.num->num);
+         emit_ins2f("push","%s",var->u.u_num.num->num);
          break;
       }
       case TOK_REAL: {
-         emit_inst2("push",var->u.u_real.real->real);         
+         emit_ins2f("push","%s",var->u.u_real.real->real);         
          break;
       }
       case TOK_true: {  
-         emit_inst2("push", "1");
+         emit_ins2("push", "1");
          break;
       }
       case TOK_false: {  
-         emit_inst2("push", "0");
+         emit_ins2("push", "0");
          break;
       }
       default: {
