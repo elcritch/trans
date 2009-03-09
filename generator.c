@@ -1,4 +1,5 @@
 #include "generator.h"
+#include "symtaben.h"
 #include <signal.h>
 
 #define GEN(name) g_##name(var->name)
@@ -44,15 +45,25 @@ static Type g_term_1(TreeTerm_1 var);
 static Type g_unary(TreeUnary var);
 static Type g_factor(TreeFactor var);
 
+unsigned int EQ_COUNT = 0;
+unsigned int REL_COUNT = 0;
+unsigned int IF_COUNT = 0;
+unsigned int WHILE_COUNT = 0;
 
 // ====================================================================
 extern void generate(TreeBlock block) {
    if (!block) return;
-      
+   
+   emit_ins2("push",	"$beg");
+   emit_ins1("jmp");
+
    for(size_t i = 0; i < SYM_MAX_DEPTH; ++i)
    {
-      emit_ins1f("$view%lu:", i+1); // make variable storage for stack
+      emit_ins2f("$v%lu:","-1", i+1); // make variable storage for stack
    }
+   
+   emit_ins1("$beg:");
+   
    g_block(block);
    
 }
@@ -61,6 +72,8 @@ extern void generate(TreeBlock block) {
 static void g_block(TreeBlock var) {
    GEN(decls);
    GEN(stmts);
+   // todo: add block cleanup code... 
+   // should restore sp to value in viewport of id.
 }
 
 // ====================================================================
@@ -145,38 +158,78 @@ static void g_stmt_loc(TreeLoc loc, TreeBool bools) {
 }
 
 static void g_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt) {
-
+   g_bools(bools);
+   emit_ins2f("push", "$ie%d", IF_COUNT); // jump to else (even if no else)
+   emit_ins1("jz");   // we want to jump if bools value was 0
+   g_stmt(stmt);
+   emit_ins2f("push", "$iq%d", IF_COUNT); // jump to end
+   emit_ins1("jump");   // we want to jump if bools value was false
+   
+   emit_ins1f("$ie%d", IF_COUNT);
+   if (else_stmt) {
+      g_stmt(else_stmt);
+   }
+   emit_ins1f("$iq%d", IF_COUNT);
+   IF_COUNT++;
 }
 
 static void g_stmt_while(TreeBool bools, TreeStmt stmt) {
-
+   
+   emit_ins1f("$ws%d", WHILE_COUNT);
+   g_bools(bools);
+   
+   emit_ins2f("push", "$wq%d", WHILE_COUNT); // jump to else (even if no else)
+   emit_ins1("jz");   // we want to jump if bools value was 0
+   
+   g_stmt(stmt);
+   
+   emit_ins2f("push", "$ws%d", WHILE_COUNT); // jump to end
+   emit_ins1("jump");   // we want to jump if bools value was false
+   
+   emit_ins1f("$wq%d", WHILE_COUNT);
+   WHILE_COUNT++;
 }
 
 static void g_stmt_do(TreeStmt stmt, TreeBool bools) {
+   
+   emit_ins1f("$ds%d", WHILE_COUNT);
+   g_stmt(stmt);
+   
+   g_bools(bools);
+
+   emit_ins2f("push", "$ds%d", WHILE_COUNT); // jump to end
+   emit_ins1("jp");   // we want to jump if bools value was 1>0
+
+   emit_ins1f("$dq%d", WHILE_COUNT);
+   WHILE_COUNT++;
 
 }
 
 static void g_stmt_break() {
-
+   emit_ins2f("push", "$wq%d", WHILE_COUNT-1); // goto last labeled loop
+   emit_ins1("jmp");
 }
 
 static void g_stmt_block(TreeBlock block) {
-
+   g_block(block);
 }
 
 static void g_stmt_read(TreeLoc loc) {
-
+   g_id(loc->id);
+   emit_ins1("rd");
+   emit_ins1("st");
 }
 
 static void g_stmt_write(TreeBool bools) {
-
+   g_bools(bools);
+   emit_ins1("wr");
 }
 
 
 // ====================================================================
 // Structure: loc [["id", ["id", "loc_1"]]]
 static void g_loc(TreeLoc var) {
-   // GEN(id);
+   GEN(id);
    GEN(loc_1);
 
 }
@@ -184,8 +237,7 @@ static void g_loc(TreeLoc var) {
 // Structure: loc_1 [["bools", ["bools", "loc_1"]]]
 static void g_loc_1(TreeLoc_1 var) {
    GEN(bools);
-   GEN(loc_1);
-
+   OPT_GEN(loc_1);
 }
 
 // Structure: bools [["join", ["join", "bool_1"]]]
@@ -201,8 +253,24 @@ static Type g_bools(TreeBool var) {
 static Type g_bool_1(TreeBool_1 var) {
    Type ret = 0; 
    GEN(join);
-   OPT_GEN(bool_1);
-
+   
+   if (var->bool_1) {
+      GEN(bool_1);
+      // if st1 = 1 or st2 = 1, add > 0, then true, else, 0
+      emit_ins1("add");
+      emit_ins2("push", "1");
+      emit_ins1("sub");
+      emit_ins2f("push", "$ef%d", EQ_COUNT);
+      emit_ins1("jp");  // jump if greater than 0
+      emit_ins1f("$et%d:",EQ_COUNT);	
+      emit_ins2("push", "0");
+      emit_ins2f("push", "$eq%d", EQ_COUNT);
+      emit_ins1("jmp");
+      emit_ins1f("$ef%d:",EQ_COUNT);
+      emit_ins2("push","1");
+      emit_ins1f("$eq%d:",EQ_COUNT);
+      EQ_COUNT++;
+   }
    
    return ret;
 }
@@ -212,8 +280,6 @@ static Type g_join(TreeJoin var) {
    Type ret = 0; 
    GEN(equality);
    OPT_GEN(join_1);
-
-   
    return ret;
 }
 
@@ -221,9 +287,25 @@ static Type g_join(TreeJoin var) {
 static Type g_join_1(TreeJoin_1 var) {
    Type ret = 0; 
    GEN(equality);
-   OPT_GEN(join_1);
-
    
+   if (var->join_1) {
+      GEN(join_1);
+      // if st1 = 1 and st2 = 1, add == 2, then true, else, 0
+      emit_ins1("add");
+      emit_ins2("push", "2");
+      emit_ins1("sub");
+      emit_ins2f("push", "$ef%d", EQ_COUNT);
+      emit_ins1("jp");   // we want to jump if >= 2
+      emit_ins1f("$et%d:",EQ_COUNT);	
+      emit_ins2("push", "0");
+      emit_ins2f("push", "$eq%d", EQ_COUNT);
+      emit_ins1("jmp");
+      emit_ins1f("$ef%d:",EQ_COUNT);
+      emit_ins2("push","1");
+      emit_ins1f("$eq%d:",EQ_COUNT);
+      EQ_COUNT++;
+   }
+
    return ret;
 }
 
@@ -231,7 +313,7 @@ static Type g_join_1(TreeJoin_1 var) {
 static Type g_equality(TreeEquality var) {
    Type ret = 0; 
    GEN(rel);
-   OPT_GEN(equality_1);
+   OPT_GEN(equality_1);   
    
    return ret;
 }
@@ -243,18 +325,36 @@ static Type g_equality_1(TreeEquality_1 var) {
    
    g_rel(var->u.u_EQ.rel);
    
+   // now generate code for == and !=
    if (var->u.u_EQ.equality_1)
       g_equality_1(var->u.u_EQ.equality_1);
    
    switch(code) {
       case TOK_EQ:
+         emit_ins1("sub");
+         emit_ins2f("push", "$ef%d", EQ_COUNT);
+         emit_ins1("jz");
          break;
       case TOK_NE:
+         emit_ins1("sub");
+         emit_ins1("not");
+         emit_ins2f("push", "$ef%d", EQ_COUNT);
+         emit_ins1("jz");
          break;
       default:
          break;
    }
    
+   emit_ins1f("$et%d:",EQ_COUNT);	
+   emit_ins2("push", "0");
+   emit_ins2f("push", "$eq%d", EQ_COUNT);
+   emit_ins1("jmp");
+   emit_ins1f("$ef%d:",EQ_COUNT);
+   emit_ins2("push","1");
+   emit_ins1f("$eq%d:",EQ_COUNT);
+   
+   EQ_COUNT++;
+   // program would continue with 0/1 on stack now
    return ret;
 }
 
@@ -268,9 +368,26 @@ static Type g_rel(TreeRel var) {
    TokenCode code = var->code;
    code = var->code;
    GEN(expr);
+   
    if (var->expr1) {
-      /** TODO: print comparison code
-      */
+      g_expr(var->expr1);
+      emit_ins1("sub");
+      emit_ins2f("push", "$rf%d", REL_COUNT );
+      
+      if (code == '<') {
+         emit_ins1("jn");         
+      }
+      else if (code == '>') {
+         emit_ins1("jn");
+      }
+      
+      emit_ins1f("$rt%d:",REL_COUNT);	
+      emit_ins2("push","0");
+      emit_ins2f("push", "$rq%d", REL_COUNT );
+      emit_ins1("jmp");
+      emit_ins1f("$rf%d:", REL_COUNT);
+      emit_ins2("push","1");
+      emit_ins1f("$eq%d:",REL_COUNT);	
    }
    
    return ret;
@@ -289,7 +406,16 @@ static Type g_expr(TreeExpr var) {
 static Type g_expr_1(TreeExpr_1 var) {
    Type ret = 0; 
    GEN(term);
-   OPT_GEN(expr_1);
+   
+   if (var->expr_1) {
+      GEN(expr_1);
+      if (var->code == '+')
+         emit_ins1("add");
+      else if (var->code == '+')
+         emit_ins1("sub");
+      else
+         printf("gen:error:g_expr_1:\n");
+   }
    
    return ret;
 };
@@ -310,23 +436,24 @@ static Type g_term_1(TreeTerm_1 var) {
    TokenCode code = var->code;
    
    GEN(unary);
-   OPT_GEN(term_1);
    
-   switch (code) {
-      case '*': {
-         emit_ins1("mul");
-         break;
-      } 
-      case '/': {
-         emit_ins1("div");
-         break;
-      } 
-      default: {
-         error_parse("gen:err:term_1");
-         kill(getpid(),SIGINT);
+   if (var->term_1) {
+      GEN(term_1);
+      switch (code) {
+         case '*': {
+            emit_ins1("mul");
+            break;
+         } 
+         case '/': {
+            emit_ins1("div");
+            break;
+         } 
+         default: {
+            error_parse("gen:err:term_1");
+            kill(getpid(),SIGINT);
+         }
       }
-   }
-   
+   }   
    return ret;
 }
 

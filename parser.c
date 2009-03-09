@@ -126,8 +126,8 @@ static TreeDecl p_decl(void)  {
 	// add id to symbol table;
    SymtabEntry id_entry = SymtabEntryNew(l1id->id, l0type);
    SymTabPut(l1id->id, id_entry);
-   printf("decl: Adding Symtable Entry: %p\n", id_entry);
-   print_SymtabEntry(2,id_entry);
+   // printf("decl: Adding Symtable Entry: %p\n", id_entry);
+   // print_SymtabEntry(2,id_entry);
    l1id->entry = id_entry;
    
    eat(';');
