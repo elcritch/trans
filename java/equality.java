@@ -1,6 +1,5 @@
 {
-    write 1<2 || 1<3;   
-
-    write 1<0 || 1<3;   
-
+    write 1==4;   
+    write 4==1;   
+    write 2==2;   
 }

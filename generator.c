@@ -85,6 +85,7 @@ extern void generate(TreeBlock block) {
 // ====================================================================
 static void g_block(TreeBlock var) {
    BLOCK_COUNT++;
+   
    emit_commf("Entering block %zd", BLOCK_COUNT);
    if (var->decls) {
       // find beginning of block address and store it in the block's viewport
@@ -103,16 +104,19 @@ static void g_block(TreeBlock var) {
    
    OPT_GEN(stmts);
    
-   // todo: add block cleanup code... 
-   // should restore sp to value in viewport of id.
-   // or pop off variable spaces for each decl
-   emit_commf("Cleaning up block frame %zd", BLOCK_COUNT);
-   emit_ins2("push","$sp");
-   emit_ins2f("push","$view%zd", BLOCK_COUNT);
-   emit_ins1("ld");
-   emit_ins2("push", "1");
-   emit_ins1("sub");
-   emit_ins1("st");
+   if (var->decls) {
+   
+      // todo: add block cleanup code... 
+      // should restore sp to value in viewport of id.
+      // or pop off variable spaces for each decl
+      emit_commf("Cleaning up block frame %zd", BLOCK_COUNT);
+      emit_ins2("push","$sp");
+      emit_ins2f("push","$view%zd", BLOCK_COUNT);
+      emit_ins1("ld");
+      emit_ins2("push", "1");
+      emit_ins1("sub");
+      emit_ins1("st");
+   }
    
    BLOCK_COUNT--;
 }
@@ -337,13 +341,13 @@ static Type g_bool_1(TreeBool_1 var) {
       emit_ins1("sub");
       emit_ins2f("push", "$ef%zd", EQ_COUNT);
       emit_ins1("jp");  // jump if greater than 0
-      emit_labelf("$et%zd:",EQ_COUNT);	
+      emit_labelf("$et%zd",EQ_COUNT);	
       emit_ins2("push", "0");
       emit_ins2f("push", "$eq%zd", EQ_COUNT);
       emit_ins1("jmp");
-      emit_labelf("$ef%zd:",EQ_COUNT);
+      emit_labelf("$ef%zd",EQ_COUNT);
       emit_ins2("push","1");
-      emit_labelf("$eq%zd:",EQ_COUNT);
+      emit_labelf("$eq%zd",EQ_COUNT);
       EQ_COUNT++;
    }
    
@@ -363,24 +367,23 @@ static Type g_join_1(TreeJoin_1 var) {
    Type ret = 0; 
    GEN(equality);
    
-   if (var->join_1) {
-      GEN(join_1);
-      // if st1 = 1 and st2 = 1, add == 2, then true, else, 0
-      emit_ins1("add");
-      emit_ins2("push", "2");
-      emit_ins1("sub");
-      emit_ins2f("push", "$ef%zd", EQ_COUNT);
-      emit_ins1("jp");   // we want to jump if >= 2
-      emit_labelf("$et%zd:",EQ_COUNT);	
-      emit_ins2("push", "0");
-      emit_ins2f("push", "$eq%zd", EQ_COUNT);
-      emit_ins1("jmp");
-      emit_labelf("$ef%zd:",EQ_COUNT);
-      emit_ins2("push","1");
-      emit_labelf("$eq%zd:",EQ_COUNT);
-      EQ_COUNT++;
-   }
+   // if st1 = 1 and st2 = 1, add == 2, then true, else, 0
+   emit_ins1("add");
+   emit_ins2("push", "2");
+   emit_ins1("sub");
+   emit_ins2f("push", "$ef%zd", EQ_COUNT);
+   emit_ins1("jz");   // we want to jump if >= 2
+   emit_labelf("$et%zd",EQ_COUNT);	
+   emit_ins2("push", "0");
+   emit_ins2f("push", "$eq%zd", EQ_COUNT);
+   emit_ins1("jmp");
+   emit_labelf("$ef%zd",EQ_COUNT);
+   emit_ins2("push","1");
+   emit_labelf("$eq%zd",EQ_COUNT);
+   EQ_COUNT++;
 
+   OPT_GEN(join_1);
+   
    return ret;
 }
 
@@ -420,13 +423,13 @@ static Type g_equality_1(TreeEquality_1 var) {
          break;
    }
    
-   emit_labelf("$et%zd:",EQ_COUNT);	
+   emit_labelf("$et%zd",EQ_COUNT);	
    emit_ins2("push", "0");
    emit_ins2f("push", "$eq%zd", EQ_COUNT);
    emit_ins1("jmp");
-   emit_labelf("$ef%zd:",EQ_COUNT);
+   emit_labelf("$ef%zd",EQ_COUNT);
    emit_ins2("push","1");
-   emit_labelf("$eq%zd:",EQ_COUNT);
+   emit_labelf("$eq%zd",EQ_COUNT);
    
    EQ_COUNT++;
    // program would continue with 0/1 on stack now
@@ -446,23 +449,38 @@ static Type g_rel(TreeRel var) {
    
    if (var->expr1) {
       g_expr(var->expr1);
+      emit_commf("Rel compare %s",tok_string(code));
       emit_ins1("sub");
+      if (code == TOK_GE || code == TOK_LE)
+         emit_ins1("dup");
       emit_ins2f("push", "$rf%zd", REL_COUNT );
       
       if (code == '<') {
          emit_ins1("jn");         
       }
       else if (code == '>') {
-         emit_ins1("jn");
+         emit_ins1("jp");
+      }
+      else if (code == TOK_LE) {
+         emit_ins1("jn"); 
+         emit_ins2f("push", "$rf%zd", REL_COUNT );
+         emit_ins1("jz");
+      }
+      else if (code == TOK_GE) {
+         emit_ins1("jp"); 
+         emit_ins2f("push", "$rf%zd", REL_COUNT );
+         emit_ins1("jz");
       }
       
-      emit_labelf("$rt%zd:",REL_COUNT);	
+      emit_labelf("$rt%zd",REL_COUNT);	
       emit_ins2("push","0");
       emit_ins2f("push", "$rq%zd", REL_COUNT );
       emit_ins1("jmp");
-      emit_labelf("$rf%zd:", REL_COUNT);
+      emit_labelf("$rf%zd", REL_COUNT);
+      if (code == TOK_GE || code == TOK_LE)
+         emit_ins1("pop");
       emit_ins2("push","1");
-      emit_labelf("$rq%zd:",REL_COUNT);	
+      emit_labelf("$rq%zd",REL_COUNT);	
       REL_COUNT++;
    }
    
@@ -546,6 +564,7 @@ static Type g_unary(TreeUnary var) {
          g_unary(var->u.u_unary.unary);
          emit_ins2("push", "-1");
          emit_ins1("mul");
+		 break;
       }
       default: {
          g_factor(var->u.u_factor.factor);

@@ -6,7 +6,7 @@
     
     j = 1;
     write j;
-    j = 10 * 2;
+    j = 10 * -2;
     write j;
 
 }

@@ -14,7 +14,7 @@ extern SymtabEntry SymtabEntryNew(char *id, TreeType type) {
    entry->id = id;
    entry->tok_code = type->basic->code;
 	entry->type = type; // store var type
-   entry->offset = SYM_OFFSET++; // increment offset of var
+   entry->offset = SYM_OFFSET; // increment offset of var
    entry->depth = SYM_DEPTH; // block depth
 	entry->line = line(); // source line
 	entry->col = col(); // source col
