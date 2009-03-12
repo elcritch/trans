@@ -10,7 +10,7 @@
 #include "strtab.h"
 #include "error.h"
 //make scanner
-extern TokenEntry in_word_set(char *str, unsigned int len);
+extern TokenEntry in_word_set(char *str, size_t len);
 
 typedef struct {
   char *str;

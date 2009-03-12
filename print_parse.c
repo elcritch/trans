@@ -8,7 +8,7 @@ int main (int argc, char const *argv[])
 {
 	// parser program
 	printf("Parsing...\n");
-	TreeBlock block = Program();
+	TreeBlock block = parse();
 	
 	printf("\n=============================================================\n");
 	printf("Finished Parsing...\n\n");

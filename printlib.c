@@ -24,7 +24,7 @@ extern void print_SymtabEntry(int d, SymtabEntry v) {
    if (!v) return;
    
 	for (int i = 0; i<d; i++) printf(" ");
-	printf("SymtabEntry[id:'%s' dims:%d offset:%d depth:%d line:%d col:%d]\n",
+	printf("SymtabEntry[id:'%s' dims:%zd offset:%zd depth:%zd line:%zd col:%zd]\n",
       v->id, v->dims, v->offset, v->depth, v->line, v->col );
    print_TreeType(d+n, v->type);
 }
@@ -34,14 +34,14 @@ extern void print_SymtabEntry(int d, SymtabEntry v) {
 extern void print_TreeId( int d, TreeId v ) {
    if (!v) return;
    printer_line("Id:", d);
-	printf("id: %s\n", v->id);
+	printf("id: %s\n", v->lex);
    print_SymtabEntry(d+n,v->entry);
 }
 
 extern void print_TreeNum( int d, TreeNum v ) {
    if (!v) return;
    printer_line("Num:", d);
-	printf("  %s\n", v->num);
+	printf("  %s size:%zd\n", v->num, v->size);
 }
 
 extern void print_TreeReal( int d, TreeReal v ) {
@@ -84,8 +84,8 @@ extern void print_TreeType( int d, TreeType v ) {
 extern void print_TreeType_1( int d, TreeType_1 v ) {
    if (!v) return;
    printer("Type_1:", d);
-   print_TreeType_1(d+n, v->type_1);
    print_TreeNum(d+n, v->num);
+   print_TreeType_1(d+n, v->type_1);
 }
 
 extern void print_TreeBasic( int d, TreeBasic v ) {

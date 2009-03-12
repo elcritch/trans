@@ -37,9 +37,6 @@ static TreeTerm_1 p_term_1(void) ;
 static TreeUnary p_unary(void) ;
 static TreeFactor p_factor(void) ;
 
-
-jmp_buf env;
-
 /**
 ==================== Program <<<<<<<<<<<<<<<<<<<<<<<<<<<===============
    Grammar:
@@ -47,7 +44,6 @@ jmp_buf env;
 */
 extern TreeBlock parse(void) {
    // setjmp(env);
-   SYM_OFFSET = 0;
    SYM_DEPTH = 0;
    SYM_MAX_DEPTH = 0;
    
@@ -67,6 +63,7 @@ static TreeBlock p_block(void)  {
    TreeBlock block = 0; // set null by default
    
    SymtabPush();
+   SYM_OFFSET = 0; // reset var offset length? 
    
    // body
    eat('{');
@@ -124,8 +121,8 @@ static TreeDecl p_decl(void)  {
    TreeId l1id = p_decl_id();
 	
 	// add id to symbol table;
-   SymtabEntry id_entry = SymtabEntryNew(l1id->id, l0type);
-   SymTabPut(l1id->id, id_entry);
+   SymtabEntry id_entry = SymtabEntryNew(l1id->lex, l0type);
+   SymTabPut(l1id->lex, id_entry);
    // printf("decl: Adding Symtable Entry: %p\n", id_entry);
    // print_SymtabEntry(2,id_entry);
    l1id->entry = id_entry;
@@ -173,7 +170,7 @@ static TreeType_1 p_type_1(void)  {
    switch (code) {
       case '[': {  
          eat('[');
-         TreeNum l1num = p_num();
+         TreeNum l1num = p_num_convert();
          eat(']');
          TreeType_1 l3type_1 = p_type_1();
          type_1 = t_type_1_num(l1num, l3type_1);

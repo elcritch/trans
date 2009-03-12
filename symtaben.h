@@ -2,12 +2,13 @@
 #define __SYMTABENT_H 1
 #include "scanner/token.h"
 // #include "tree.h"
+#include <ctype.h>
 
 #define SYM_MAX_DIMS 255
 
-unsigned int SYM_OFFSET;
-unsigned int SYM_DEPTH;
-unsigned int SYM_MAX_DEPTH;
+size_t SYM_OFFSET;
+size_t SYM_DEPTH;
+size_t SYM_MAX_DEPTH;
 
 // typedef struct SymtabEntry *SymtabEntry;
 typedef struct treebasic *TreeBasic; 
@@ -42,15 +43,15 @@ typedef struct symtabentry {
   char *id;
   TreeType type;
   TokenCode tok_code;
-  unsigned int dims;
+  size_t dims;
 
   // table information 
-  unsigned int offset;
-  unsigned int depth;
+  size_t offset;
+  size_t depth;
 
   // line and column number
-  unsigned int line;
-  unsigned int col;
+  size_t line;
+  size_t col;
 } *SymtabEntry;
 
 extern SymtabEntry SymtabEntryNew(char *id, TreeType type);

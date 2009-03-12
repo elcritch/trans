@@ -1,0 +1,1556 @@
+==== bool.java ====
+{
+    write 1<2 || 1<3;   
+
+    write 1<0 || 1<3;   
+
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		1
+		push		2
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		push		1
+		push		3
+		sub
+		push		$rf1
+		jn
+		$rt1:
+		push		0
+		push		$rq1
+		jmp
+		$rf1:
+		push		1
+		$rq1:
+		wr
+		push		1
+		push		0
+		sub
+		push		$rf2
+		jn
+		$rt2:
+		push		0
+		push		$rq2
+		jmp
+		$rf2:
+		push		1
+		$rq2:
+		push		1
+		push		3
+		sub
+		push		$rf3
+		jn
+		$rt3:
+		push		0
+		push		$rq3
+		jmp
+		$rf3:
+		push		1
+		$rq3:
+		wr
+		stop
+		end
+
+
+
+==== bubble.java ====
+{
+    int i;
+    int j;
+    int v;
+    int[10] a;
+    a[0]=12; a[1]=11; a[2]=14; a[3]=17; a[4]=15;
+    a[5]=5;  a[6]=19; a[7]=2;  a[8]=0;  a[9]=16;
+    i=0;
+    while (i<10) {
+        j=i;
+        v=i;
+        while (j<10) {
+            if (a[j]<a[v])
+                v=j;
+            j=j+1;
+        }
+        {
+            int t;
+            t=a[i];
+            a[i]=a[v];
+            a[v]=t;
+        }
+        i=i+1;
+    }
+    i=0;
+    while (i<10) {
+        write a[i];
+        i=i+1;
+    }
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$view2:		-1
+		$view3:		-1
+		$view4:		-1
+		$view5:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		push		$view1
+		push		$sp
+		push		1
+		add
+		st
+		push		$view1
+		push		$sp
+		push		2
+		add
+		st
+		push		$view1
+		push		$sp
+		push		3
+		add
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		12
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		11
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		14
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		17
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		15
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		5
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		19
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		2
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		0
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		push		16
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		0
+		st
+		$ws0
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		10
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		push		$wq0
+		jz
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		st
+		# v
+		push		$view1
+		ld
+		push		2
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		st
+		$ws0
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		push		10
+		sub
+		push		$rf1
+		jn
+		$rt1:
+		push		0
+		push		$rq1
+		jmp
+		$rf1:
+		push		1
+		$rq1:
+		push		$wq0
+		jz
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		# v
+		push		$view1
+		ld
+		push		2
+		add
+		sub
+		push		$rf2
+		jn
+		$rt2:
+		push		0
+		push		$rq2
+		jmp
+		$rf2:
+		push		1
+		$rq2:
+		push		$ie0
+		jz
+		# v
+		push		$view1
+		ld
+		push		2
+		add
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		st
+		push		$iq0
+		jump
+		$ie0
+		$iq0
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		push		1
+		add
+		st
+		push		$ws0
+		jump
+		$wq0
+		push		$view3
+		push		$sp
+		push		4
+		add
+		st
+		# t
+		push		$view3
+		ld
+		push		4
+		add
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		# v
+		push		$view1
+		ld
+		push		2
+		add
+		st
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		# t
+		push		$view3
+		ld
+		push		4
+		add
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		add
+		st
+		push		$ws1
+		jump
+		$wq1
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		0
+		st
+		$ws2
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		10
+		sub
+		push		$rf3
+		jn
+		$rt3:
+		push		0
+		push		$rq3
+		jmp
+		$rf3:
+		push		1
+		$rq3:
+		push		$wq2
+		jz
+		# a
+		push		$view1
+		ld
+		push		3
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		wr
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		add
+		st
+		push		$ws2
+		jump
+		$wq2
+		stop
+		end
+
+
+
+==== decl_st.java ====
+{
+    int i;
+
+    i = 1;
+
+}
+
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		st
+		stop
+		end
+
+
+
+==== decl_st_wr.java ====
+{
+    int i;
+
+    i = 10000;
+
+    write i;
+}
+
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		10000
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		wr
+		stop
+		end
+
+
+
+==== decls.java ====
+{
+    int i;
+    int j;
+    int k;
+
+    i = 1;
+    j = 3;
+    k = 4;
+}
+
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		push		$view1
+		push		$sp
+		push		1
+		add
+		st
+		push		$view1
+		push		$sp
+		push		2
+		add
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		st
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		push		3
+		st
+		# k
+		push		$view1
+		ld
+		push		2
+		add
+		push		4
+		st
+		stop
+		end
+
+
+
+==== decls1.java ====
+{
+    int i;
+    int j;
+    int k;
+
+    i = 1;
+    j = 3;
+    k = 4;
+}
+
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		push		$view1
+		push		$sp
+		push		1
+		add
+		st
+		push		$view1
+		push		$sp
+		push		2
+		add
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		st
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		push		3
+		st
+		# k
+		push		$view1
+		ld
+		push		2
+		add
+		push		4
+		st
+		stop
+		end
+
+
+
+==== equality.java ====
+{
+    write 1<2 || 1<3;   
+
+    write 1<0 || 1<3;   
+
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		1
+		push		2
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		push		1
+		push		3
+		sub
+		push		$rf1
+		jn
+		$rt1:
+		push		0
+		push		$rq1
+		jmp
+		$rf1:
+		push		1
+		$rq1:
+		wr
+		push		1
+		push		0
+		sub
+		push		$rf2
+		jn
+		$rt2:
+		push		0
+		push		$rq2
+		jmp
+		$rf2:
+		push		1
+		$rq2:
+		push		1
+		push		3
+		sub
+		push		$rf3
+		jn
+		$rt3:
+		push		0
+		push		$rq3
+		jmp
+		$rf3:
+		push		1
+		$rq3:
+		wr
+		stop
+		end
+
+
+
+==== expr.java ====
+{
+    int i;
+    float j;
+
+    i = 10000;
+    
+    j = 1;
+    write j;
+    j = 10 * 2;
+    write j;
+
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		push		$view1
+		push		$sp
+		push		1
+		add
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		10000
+		st
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		push		1
+		st
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		wr
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		push		10
+		push		2
+		mul
+		st
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		wr
+		stop
+		end
+
+
+
+==== expr1.java ====
+{
+    write 1+2 ;   
+    write 1-2 ;   
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		1
+		push		2
+		add
+		wr
+		push		1
+		push		2
+		sub
+		wr
+		stop
+		end
+
+
+
+==== if.java ====
+{
+    int x;
+    x=1;
+    write x+y;
+    if (x>0)
+    {
+	write x;
+    }
+}
+----------
+var id:'y'
+parse error: Cannot find var entry! (line: 4, char 13)
+
+
+
+==== ifelse.java ====
+{
+    int x;
+    x=1;
+    write x+y;
+    if (x>0)
+    {
+	write x;
+    }
+    else
+    {
+	write x;
+    }
+}
+----------
+var id:'y'
+parse error: Cannot find var entry! (line: 4, char 13)
+
+
+
+==== join.java ====
+{
+    write 1<2 && 1<3;   
+
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		1
+		push		2
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		push		1
+		push		3
+		sub
+		push		$rf1
+		jn
+		$rt1:
+		push		0
+		push		$rq1
+		jmp
+		$rf1:
+		push		1
+		$rq1:
+		wr
+		stop
+		end
+
+
+
+==== join1.java ====
+{
+    write 1<0 && 1<3;   
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		1
+		push		0
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		push		1
+		push		3
+		sub
+		push		$rf1
+		jn
+		$rt1:
+		push		0
+		push		$rq1
+		jmp
+		$rf1:
+		push		1
+		$rq1:
+		wr
+		stop
+		end
+
+
+
+==== rel.java ====
+{
+    write 1<2 ;   
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		1
+		push		2
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		wr
+		stop
+		end
+
+
+
+==== rel1.java ====
+{
+    write 1<=2 ;   
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		1
+		push		2
+		sub
+		push		$rf0
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		wr
+		stop
+		end
+
+
+
+==== rel2.java ====
+{
+    write 1>2 ;   
+    write 1>=2 ;   
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		1
+		push		2
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		wr
+		push		1
+		push		2
+		sub
+		push		$rf1
+		$rt1:
+		push		0
+		push		$rq1
+		jmp
+		$rf1:
+		push		1
+		$rq1:
+		wr
+		stop
+		end
+
+
+
+==== scope.java ====
+{
+    int x;
+    int y;
+    x=1;
+    y=2;
+    write x+y;
+    {
+	float x;
+	x=2.3;
+	write x+y;
+    }
+    write x+y;
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$view2:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		push		$view1
+		push		$sp
+		push		1
+		add
+		st
+		# x
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		st
+		# y
+		push		$view1
+		ld
+		push		1
+		add
+		push		2
+		st
+		# x
+		push		$view1
+		ld
+		push		0
+		add
+		# y
+		push		$view1
+		ld
+		push		1
+		add
+		add
+		wr
+		push		$view2
+		push		$sp
+		push		2
+		add
+		st
+		# x
+		push		$view2
+		ld
+		push		2
+		add
+		push		2.3
+		st
+		# x
+		push		$view2
+		ld
+		push		2
+		add
+		# y
+		push		$view1
+		ld
+		push		1
+		add
+		add
+		wr
+		# x
+		push		$view1
+		ld
+		push		0
+		add
+		# y
+		push		$view1
+		ld
+		push		1
+		add
+		add
+		wr
+		stop
+		end
+
+
+
+==== simple.java ====
+{
+    int i;
+    int j;
+    float x;
+
+    read i;
+    read j;
+    if (i<j)
+	x=i/j;
+    else
+	x=j/i;
+    write x;
+}
+
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		push		$view1
+		push		$sp
+		push		1
+		add
+		st
+		push		$view1
+		push		$sp
+		push		2
+		add
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		rd
+		st
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		rd
+		st
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		push		$ie0
+		jz
+		# x
+		push		$view1
+		ld
+		push		2
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		div
+		st
+		push		$iq0
+		jump
+		$ie0
+		# x
+		push		$view1
+		ld
+		push		2
+		add
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		div
+		st
+		$iq0
+		# x
+		push		$view1
+		ld
+		push		2
+		add
+		wr
+		stop
+		end
+
+
+
+==== simple2.java ====
+{
+    int i;
+    int j;
+
+    if (i<j)
+	x=i/j;
+    else
+	x=j/i;
+
+}
+
+----------
+var id:'x'
+parse error: Cannot find var entry! (line: 6, char 2)
+var id:'x'
+parse error: Cannot find var entry! (line: 8, char 2)
+
+
+
+==== source.java ====
+{
+    int i;
+    int j;
+    float[100] a;
+    float v;
+    float x;
+
+    while (true) {
+	do i=i+1; while (a[i]<v);
+	do i=i-1; while (a[i]>v);
+	if (i>=j) break;
+	x=a[i];
+	a[i]=a[j];
+	a[j]=x;
+    }
+}
+
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$view2:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		push		$view1
+		push		$sp
+		push		1
+		add
+		st
+		push		$view1
+		push		$sp
+		push		2
+		add
+		st
+		push		$view1
+		push		$sp
+		push		3
+		add
+		st
+		push		$view1
+		push		$sp
+		push		4
+		add
+		st
+		$ws0
+		push		1
+		push		$wq0
+		jz
+		$ds0
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		add
+		st
+		# a
+		push		$view1
+		ld
+		push		2
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		# v
+		push		$view1
+		ld
+		push		3
+		add
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		push		$ds0
+		jp
+		$dq0
+		$ds1
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		sub
+		st
+		# a
+		push		$view1
+		ld
+		push		2
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		# v
+		push		$view1
+		ld
+		push		3
+		add
+		sub
+		push		$rf1
+		jn
+		$rt1:
+		push		0
+		push		$rq1
+		jmp
+		$rf1:
+		push		1
+		$rq1:
+		push		$ds1
+		jp
+		$dq1
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		sub
+		push		$rf2
+		$rt2:
+		push		0
+		push		$rq2
+		jmp
+		$rf2:
+		push		1
+		$rq2:
+		push		$ie0
+		jz
+		push		$wq1
+		jmp
+		push		$iq0
+		jump
+		$ie0
+		$iq0
+		# x
+		push		$view1
+		ld
+		push		4
+		add
+		# a
+		push		$view1
+		ld
+		push		2
+		add
+		# i
+		push		$view1
+		ld
+		push		0
+		add
+		st
+		# a
+		push		$view1
+		ld
+		push		2
+		add
+		# a
+		push		$view1
+		ld
+		push		2
+		add
+		# j
+		push		$view1
+		ld
+		push		1
+		add
+		st
+		# a
+		push		$view1
+		ld
+		push		2
+		add
+		# x
+		push		$view1
+		ld
+		push		4
+		add
+		st
+		push		$ws2
+		jump
+		$wq2
+		stop
+		end
+
+
+
+==== term1.java ====
+{
+    write 1*2 ;   
+    write 1/2 ;   
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		1
+		push		2
+		mul
+		wr
+		push		1
+		push		2
+		div
+		wr
+		stop
+		end
+
+
+
+==== unary.java ====
+{
+    write -2 ;   
+}
+----------
+		push		$beg
+		jmp
+		$view1:		-1
+		$beg:
+		push		2
+		push		-1
+		mul
+gen:err:factor:code:0
+parse error: gen:err:factor (line: 4, char 0)
+
+
+==== while.java =====
+
+{
+    int x;
+    x=1;
+
+    while (x<10)
+    {
+	x = x+1;
+    }
+    write 1;
+}
+----------------
+		push		$beg
+		jmp
+		$view1:		-1
+		$view2:		-1
+		$beg:
+		push		$view1
+		push		$sp
+		push		0
+		add
+		st
+		# x
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		st
+		$ws0
+		# x
+		push		$view1
+		ld
+		push		0
+		add
+		push		10
+		sub
+		push		$rf0
+		jn
+		$rt0:
+		push		0
+		push		$rq0
+		jmp
+		$rf0:
+		push		1
+		$rq0:
+		push		$wq0
+		jz
+		# x
+		push		$view1
+		ld
+		push		0
+		add
+		# x
+		push		$view1
+		ld
+		push		0
+		add
+		push		1
+		add
+		st
+		push		$ws0
+		jump
+		$wq0
+		push		1
+		wr
+		stop
+		end

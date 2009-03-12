@@ -78,7 +78,8 @@ extern TreeType t_type_basic(TreeBasic basic, TreeType_1 type_1) {
 // Type_1 ["type_1"]
 extern TreeType_1 t_type_1_num(TreeNum num, TreeType_1 type_1) {
   ALLOC(treetype_1);
-  v->type_1 = type_1;
+  v->num = num;  
+  v->type_1 = type_1;  
   return v;
 }
 

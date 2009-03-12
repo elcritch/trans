@@ -1,0 +1,28 @@
+		push		$beg
+		jmp
+$view1:		-1
+$beg:		push		$view1
+		push		$sp
+		push		1
+		add
+		st
+		push		0		# empty var for block
+		dump
+		# variable: i depth:1 offset:0
+		push		$view1
+		ld
+		push		0
+		add
+		push		10000
+		st
+		dump
+		# variable: i depth:1 offset:0
+		push		$view1
+		ld
+		push		0
+		add
+		ld
+		dump
+		wr
+		stop
+		end

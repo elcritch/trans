@@ -19,6 +19,7 @@ extern LINKAGE void error_parse(char *msg) {
   fflush(stdout); fflush(stderr);
   // kill(getpid(),SIGINT);
 }
+
 // error_scan(code, curr()->code, file_, line_);
 extern LINKAGE void error_scan(int code, int found, char *fl, int ln) {
    char *str = tok_string(code);

@@ -14,8 +14,12 @@
 #define emit_comm(msg) printf("\t\t# "msg"\n")
 #define emit_commf(msg, args...) printf("\t\t# "msg"\n", args)
 
+#define emit_label(msg) printf(""msg":");
+#define emit_labelf(msg, args...) printf(""msg":", args)
+#define emit_label2f(msg, arg, args...) printf(""msg":\t\t"arg, args)
 
-static void g_id(TreeId var);
+
+static void g_id_addr(TreeId var);
 static void g_block(TreeBlock var);
 static void g_decls(TreeDecls var);
 static void g_decl(TreeDecl var);
@@ -29,8 +33,8 @@ static void g_stmt_break();
 static void g_stmt_block(TreeBlock block);
 static void g_stmt_read(TreeLoc loc);
 static void g_stmt_write(TreeBool bools);
-static void g_loc(TreeLoc var);
-static void g_loc_1(TreeLoc_1 var);
+static Type g_loc(TreeLoc var);
+static void g_loc_1(TreeLoc_1 var, TreeType_1 type_1);
 static Type g_bools(TreeBool var);
 static Type g_bool_1(TreeBool_1 var);
 static Type g_join(TreeJoin var);
@@ -45,35 +49,72 @@ static Type g_term_1(TreeTerm_1 var);
 static Type g_unary(TreeUnary var);
 static Type g_factor(TreeFactor var);
 
-unsigned int EQ_COUNT = 0;
-unsigned int REL_COUNT = 0;
-unsigned int IF_COUNT = 0;
-unsigned int WHILE_COUNT = 0;
+size_t EQ_COUNT;
+size_t REL_COUNT;
+size_t IF_COUNT;
+size_t WHILE_COUNT;
+size_t BLOCK_COUNT;
 
 // ====================================================================
 extern void generate(TreeBlock block) {
    if (!block) return;
+   
+   EQ_COUNT = 0;
+   REL_COUNT = 0;
+   IF_COUNT = 0;
+   WHILE_COUNT = 0;
+   BLOCK_COUNT = 0;
    
    emit_ins2("push",	"$beg");
    emit_ins1("jmp");
 
    for(size_t i = 0; i < SYM_MAX_DEPTH; ++i)
    {
-      emit_ins2f("$v%lu:","-1", i+1); // make variable storage for stack
+      emit_label2f("$view%zd","%s\n",i+1, "-1"); // make variable storage for stack
    }
    
-   emit_ins1("$beg:");
+   emit_label("$beg");
    
    g_block(block);
    
+   emit_ins1("stop");
+   emit_ins1("end");
+	
 }
 
 // ====================================================================
 static void g_block(TreeBlock var) {
-   GEN(decls);
-   GEN(stmts);
+   BLOCK_COUNT++;
+   emit_commf("Entering block %zd", BLOCK_COUNT);
+   if (var->decls) {
+      // find beginning of block address and store it in the block's viewport
+      SymtabEntry entry = var->decls->decl->id->entry;
+      if (entry->depth != BLOCK_COUNT) {
+         error_parse("Generator error! block count doesn't match entry depth!");
+         kill(getpid(), SIGINT);
+      }
+      emit_ins2f("push","$view%zd", BLOCK_COUNT);	// store in viewport 1
+      emit_ins2("push","$sp");   // store add of stack+1 in $v1
+      emit_ins2("push", "1");   // stack offset adjus
+      emit_ins1("add");
+      emit_ins1("st");  // now location of block 1 is stored in $view%zd
+      GEN(decls);
+   }
+   
+   OPT_GEN(stmts);
+   
    // todo: add block cleanup code... 
    // should restore sp to value in viewport of id.
+   // or pop off variable spaces for each decl
+   emit_commf("Cleaning up block frame %zd", BLOCK_COUNT);
+   emit_ins2("push","$sp");
+   emit_ins2f("push","$view%zd", BLOCK_COUNT);
+   emit_ins1("ld");
+   emit_ins2("push", "1");
+   emit_ins1("sub");
+   emit_ins1("st");
+   
+   BLOCK_COUNT--;
 }
 
 // ====================================================================
@@ -85,26 +126,71 @@ static void g_decls(TreeDecls var) {
 static void g_decl(TreeDecl var) {
    
    SymtabEntry entry = var->id->entry;
+   // Structure: type [["basic", ["basic", "type_1"]]]
+   // Structure: type_1 [["num", ["type_1"]]]
+   // GEN(id);
+   // GEN(type);
    
-   emit_ins2f("push","$v%d", entry->depth);	// store in viewport 1
-   emit_ins2("push","$sp");   // store stack+1 in $v1
-   emit_ins2f("push", "%d", entry->offset);   // var offset
-   emit_ins1("add");
-   emit_ins1("st");  // now location of stack 1 is stored in $v1
-	
+   // "allocate" enough space on the block to store this var
+   // this could also done by "jumping" the stack pointer
+   for (size_t i = 0; i< entry->dims; ++i)
+      emit_ins2("push", "0\t\t# empty var for block");
+   
 }
 
-static void g_id(TreeId var) {
-   char *id = var->id;
+static void g_id_addr(TreeId var) {
+   char *lex = var->lex;
    SymtabEntry entry = var->entry;
    
-   emit_commf("%s",id);
-   emit_ins2f("push","$view%d", entry->depth);
+   emit_commf("variable: %s depth:%zd offset:%zd",lex, entry->depth, entry->offset);
+   emit_ins2f("push","$view%zd", entry->depth);
    emit_ins1("ld");
-	emit_ins2f("push","%d", entry->offset);
+   emit_ins2f("push","%zd", entry->offset);
    emit_ins1("add");
    
 }
+
+// Structure: loc [["id", ["id", "loc_1"]]]
+static Type g_loc(TreeLoc var) {
+   TreeId id = var->id;
+   SymtabEntry entry = var->id->entry;
+   TreeLoc_1 loc_1 = var->loc_1;
+   
+   // generate base offset
+   g_id_addr(var->id);
+   
+   if (var->loc_1) {
+      // if array, then we need to add array offset to base offset
+      emit_commf("array offset: %s", id->lex);
+      g_bools(loc_1->bools);
+      // add runtime dimension check here
+      if (loc_1->loc_1) 
+         g_loc_1(loc_1->loc_1, entry->type->type_1->type_1);
+      emit_ins1("add");
+      // if width wasn't 1, them multiply by width here.
+      emit_commf("end array offset: %s", id->lex);
+   }
+   return (Type) NULL;
+}
+
+// Structure: loc_1 [["bools", ["bools", "loc_1"]]]
+static void g_loc_1(TreeLoc_1 var, TreeType_1 type_1) {
+   //  (...) x N_j + I_j 
+   
+   // calc N_j and multiply by prev dim on stack
+   emit_ins2f("push", "%zd", type_1->num->size);
+   emit_ins1("mul");
+   
+   // calc I_j and add to prev value on stack
+   GEN(bools);
+   // add runtime dimension check here
+   emit_ins1("add");
+   
+   if (var->loc_1) {
+      g_loc_1(var->loc_1, type_1->type_1);
+   }
+}
+
 
 // ====================================================================
 // ====================================================================
@@ -151,62 +237,62 @@ static void g_stmt(TreeStmt v) {
 // ====================================================================
 
 static void g_stmt_loc(TreeLoc loc, TreeBool bools) {
-   g_id(loc->id);
-   Type ret = g_bools(bools);
-   ret = ret;
+   Type tp1 = g_loc(loc);
+   Type tp2 = g_bools(bools);
+   tp1 = tp2;
    emit_ins1("st");
 }
 
 static void g_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt) {
    g_bools(bools);
-   emit_ins2f("push", "$ie%d", IF_COUNT); // jump to else (even if no else)
+   emit_ins2f("push", "$ie%zd", IF_COUNT); // jump to else (even if no else)
    emit_ins1("jz");   // we want to jump if bools value was 0
    g_stmt(stmt);
-   emit_ins2f("push", "$iq%d", IF_COUNT); // jump to end
+   emit_ins2f("push", "$iq%zd", IF_COUNT); // jump to end
    emit_ins1("jump");   // we want to jump if bools value was false
    
-   emit_ins1f("$ie%d", IF_COUNT);
+   emit_labelf("$ie%zd", IF_COUNT);
    if (else_stmt) {
       g_stmt(else_stmt);
    }
-   emit_ins1f("$iq%d", IF_COUNT);
+   emit_labelf("$iq%zd", IF_COUNT);
    IF_COUNT++;
 }
 
 static void g_stmt_while(TreeBool bools, TreeStmt stmt) {
    
-   emit_ins1f("$ws%d", WHILE_COUNT);
+   emit_labelf("$ws%zd", WHILE_COUNT);
    g_bools(bools);
    
-   emit_ins2f("push", "$wq%d", WHILE_COUNT); // jump to else (even if no else)
+   emit_ins2f("push", "$wq%zd", WHILE_COUNT); // jump to else (even if no else)
    emit_ins1("jz");   // we want to jump if bools value was 0
    
    g_stmt(stmt);
    
-   emit_ins2f("push", "$ws%d", WHILE_COUNT); // jump to end
+   emit_ins2f("push", "$ws%zd", WHILE_COUNT); // jump to end
    emit_ins1("jump");   // we want to jump if bools value was false
    
-   emit_ins1f("$wq%d", WHILE_COUNT);
+   emit_labelf("$wq%zd", WHILE_COUNT);
    WHILE_COUNT++;
 }
 
 static void g_stmt_do(TreeStmt stmt, TreeBool bools) {
    
-   emit_ins1f("$ds%d", WHILE_COUNT);
+   emit_labelf("$ds%zd", WHILE_COUNT);
    g_stmt(stmt);
    
    g_bools(bools);
 
-   emit_ins2f("push", "$ds%d", WHILE_COUNT); // jump to end
+   emit_ins2f("push", "$ds%zd", WHILE_COUNT); // jump to end
    emit_ins1("jp");   // we want to jump if bools value was 1>0
 
-   emit_ins1f("$dq%d", WHILE_COUNT);
+   emit_labelf("$dq%zd", WHILE_COUNT);
    WHILE_COUNT++;
 
 }
 
 static void g_stmt_break() {
-   emit_ins2f("push", "$wq%d", WHILE_COUNT-1); // goto last labeled loop
+   emit_ins2f("push", "$wq%zd", WHILE_COUNT-1); // goto last labeled loop
    emit_ins1("jmp");
 }
 
@@ -215,7 +301,7 @@ static void g_stmt_block(TreeBlock block) {
 }
 
 static void g_stmt_read(TreeLoc loc) {
-   g_id(loc->id);
+   g_loc(loc);
    emit_ins1("rd");
    emit_ins1("st");
 }
@@ -226,19 +312,8 @@ static void g_stmt_write(TreeBool bools) {
 }
 
 
+
 // ====================================================================
-// Structure: loc [["id", ["id", "loc_1"]]]
-static void g_loc(TreeLoc var) {
-   GEN(id);
-   GEN(loc_1);
-
-}
-
-// Structure: loc_1 [["bools", ["bools", "loc_1"]]]
-static void g_loc_1(TreeLoc_1 var) {
-   GEN(bools);
-   OPT_GEN(loc_1);
-}
 
 // Structure: bools [["join", ["join", "bool_1"]]]
 static Type g_bools(TreeBool var) {
@@ -260,15 +335,15 @@ static Type g_bool_1(TreeBool_1 var) {
       emit_ins1("add");
       emit_ins2("push", "1");
       emit_ins1("sub");
-      emit_ins2f("push", "$ef%d", EQ_COUNT);
+      emit_ins2f("push", "$ef%zd", EQ_COUNT);
       emit_ins1("jp");  // jump if greater than 0
-      emit_ins1f("$et%d:",EQ_COUNT);	
+      emit_labelf("$et%zd:",EQ_COUNT);	
       emit_ins2("push", "0");
-      emit_ins2f("push", "$eq%d", EQ_COUNT);
+      emit_ins2f("push", "$eq%zd", EQ_COUNT);
       emit_ins1("jmp");
-      emit_ins1f("$ef%d:",EQ_COUNT);
+      emit_labelf("$ef%zd:",EQ_COUNT);
       emit_ins2("push","1");
-      emit_ins1f("$eq%d:",EQ_COUNT);
+      emit_labelf("$eq%zd:",EQ_COUNT);
       EQ_COUNT++;
    }
    
@@ -294,15 +369,15 @@ static Type g_join_1(TreeJoin_1 var) {
       emit_ins1("add");
       emit_ins2("push", "2");
       emit_ins1("sub");
-      emit_ins2f("push", "$ef%d", EQ_COUNT);
+      emit_ins2f("push", "$ef%zd", EQ_COUNT);
       emit_ins1("jp");   // we want to jump if >= 2
-      emit_ins1f("$et%d:",EQ_COUNT);	
+      emit_labelf("$et%zd:",EQ_COUNT);	
       emit_ins2("push", "0");
-      emit_ins2f("push", "$eq%d", EQ_COUNT);
+      emit_ins2f("push", "$eq%zd", EQ_COUNT);
       emit_ins1("jmp");
-      emit_ins1f("$ef%d:",EQ_COUNT);
+      emit_labelf("$ef%zd:",EQ_COUNT);
       emit_ins2("push","1");
-      emit_ins1f("$eq%d:",EQ_COUNT);
+      emit_labelf("$eq%zd:",EQ_COUNT);
       EQ_COUNT++;
    }
 
@@ -332,26 +407,26 @@ static Type g_equality_1(TreeEquality_1 var) {
    switch(code) {
       case TOK_EQ:
          emit_ins1("sub");
-         emit_ins2f("push", "$ef%d", EQ_COUNT);
+         emit_ins2f("push", "$ef%zd", EQ_COUNT);
          emit_ins1("jz");
          break;
       case TOK_NE:
          emit_ins1("sub");
          emit_ins1("not");
-         emit_ins2f("push", "$ef%d", EQ_COUNT);
+         emit_ins2f("push", "$ef%zd", EQ_COUNT);
          emit_ins1("jz");
          break;
       default:
          break;
    }
    
-   emit_ins1f("$et%d:",EQ_COUNT);	
+   emit_labelf("$et%zd:",EQ_COUNT);	
    emit_ins2("push", "0");
-   emit_ins2f("push", "$eq%d", EQ_COUNT);
+   emit_ins2f("push", "$eq%zd", EQ_COUNT);
    emit_ins1("jmp");
-   emit_ins1f("$ef%d:",EQ_COUNT);
+   emit_labelf("$ef%zd:",EQ_COUNT);
    emit_ins2("push","1");
-   emit_ins1f("$eq%d:",EQ_COUNT);
+   emit_labelf("$eq%zd:",EQ_COUNT);
    
    EQ_COUNT++;
    // program would continue with 0/1 on stack now
@@ -372,7 +447,7 @@ static Type g_rel(TreeRel var) {
    if (var->expr1) {
       g_expr(var->expr1);
       emit_ins1("sub");
-      emit_ins2f("push", "$rf%d", REL_COUNT );
+      emit_ins2f("push", "$rf%zd", REL_COUNT );
       
       if (code == '<') {
          emit_ins1("jn");         
@@ -381,13 +456,14 @@ static Type g_rel(TreeRel var) {
          emit_ins1("jn");
       }
       
-      emit_ins1f("$rt%d:",REL_COUNT);	
+      emit_labelf("$rt%zd:",REL_COUNT);	
       emit_ins2("push","0");
-      emit_ins2f("push", "$rq%d", REL_COUNT );
+      emit_ins2f("push", "$rq%zd", REL_COUNT );
       emit_ins1("jmp");
-      emit_ins1f("$rf%d:", REL_COUNT);
+      emit_labelf("$rf%zd:", REL_COUNT);
       emit_ins2("push","1");
-      emit_ins1f("$eq%d:",REL_COUNT);	
+      emit_labelf("$rq%zd:",REL_COUNT);	
+      REL_COUNT++;
    }
    
    return ret;
@@ -406,17 +482,14 @@ static Type g_expr(TreeExpr var) {
 static Type g_expr_1(TreeExpr_1 var) {
    Type ret = 0; 
    GEN(term);
+   if (var->code == '+')
+      emit_ins1("add");
+   else if (var->code == '-')
+      emit_ins1("sub");
+   else
+      printf("gen:error:g_expr_1:\n");
    
-   if (var->expr_1) {
-      GEN(expr_1);
-      if (var->code == '+')
-         emit_ins1("add");
-      else if (var->code == '+')
-         emit_ins1("sub");
-      else
-         printf("gen:error:g_expr_1:\n");
-   }
-   
+   OPT_GEN(expr_1);
    return ret;
 };
 
@@ -437,23 +510,23 @@ static Type g_term_1(TreeTerm_1 var) {
    
    GEN(unary);
    
-   if (var->term_1) {
-      GEN(term_1);
-      switch (code) {
-         case '*': {
-            emit_ins1("mul");
-            break;
-         } 
-         case '/': {
-            emit_ins1("div");
-            break;
-         } 
-         default: {
-            error_parse("gen:err:term_1");
-            kill(getpid(),SIGINT);
-         }
+   switch (code) {
+      case '*': {
+         emit_ins1("mul");
+         break;
+      } 
+      case '/': {
+         emit_ins1("div");
+         break;
+      } 
+      default: {
+         error_parse("gen:err:term_1");
+         kill(getpid(),SIGINT);
       }
-   }   
+   }
+   
+   OPT_GEN(term_1);
+   
    return ret;
 }
 
@@ -471,7 +544,8 @@ static Type g_unary(TreeUnary var) {
       }
       case '-': {
          g_unary(var->u.u_unary.unary);
-         emit_ins1("sub");
+         emit_ins2("push", "-1");
+         emit_ins1("mul");
       }
       default: {
          g_factor(var->u.u_factor.factor);
@@ -498,6 +572,7 @@ static Type g_factor(TreeFactor var) {
       }
       case TOK_ID: {  //===== REDUCED TOK_loc
          g_loc(var->u.u_loc.loc);
+         emit_ins1("ld"); // load value from computed address
          break;
       }
       case TOK_NUM: {
@@ -517,6 +592,7 @@ static Type g_factor(TreeFactor var) {
          break;
       }
       default: {
+         printf("gen:err:factor:code:%d\n",code);
          error_parse("gen:err:factor");
          kill(getpid(),SIGINT);
          break;

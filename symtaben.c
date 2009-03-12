@@ -20,13 +20,16 @@ extern SymtabEntry SymtabEntryNew(char *id, TreeType type) {
 	entry->col = col(); // source col
 	
 	// count number of dimensions in array
-	unsigned int dims = 0;
+	size_t dims = 1;
 	TreeType_1 head = type->type_1;
 	while (head && (dims < SYM_MAX_DIMS) ) {
-		dims++;
+      dims *= head->num->size;
 		head = head->type_1;
 	}
+	
+	// set total number of dims for an array, then adjust var offset to this
 	entry->dims = dims;
+   SYM_OFFSET += dims;
 	
 	return entry;
 }
