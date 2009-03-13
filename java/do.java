@@ -2,9 +2,9 @@
     int x;
     x=0;
 
-    while (x<1000)
-    {
+    do {
 	x = x+1;
 	write x;
     }
+    while (x<10);
 }

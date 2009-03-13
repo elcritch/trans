@@ -8,6 +8,9 @@
 
 #define ERR(s) err((char *)s,(char *)__FILE__,__LINE__)
 
+int PARSE_ERROR;
+int GEN_ERROR;
+
 extern LINKAGE void err(char *msg, char *file, int line);
 
 extern LINKAGE void error_parse(char *msg);

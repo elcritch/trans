@@ -14,9 +14,9 @@
 #define emit_comm(msg) printf("\t\t# "msg"\n")
 #define emit_commf(msg, args...) printf("\t\t# "msg"\n", args)
 
-#define emit_label(msg) printf(""msg":");
-#define emit_labelf(msg, args...) printf(""msg":", args)
-#define emit_label2f(msg, arg, args...) printf(""msg":\t\t"arg, args)
+#define emit_label(msg) printf(""msg":\n");
+#define emit_labelf(msg, args...) printf(""msg":\n", args)
+#define emit_label2f(msg, arg, args...) printf(""msg":\t\t"arg"\n", args)
 
 
 static void g_id_addr(TreeId var);
@@ -253,7 +253,7 @@ static void g_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt) {
    emit_ins1("jz");   // we want to jump if bools value was 0
    g_stmt(stmt);
    emit_ins2f("push", "$iq%zd", IF_COUNT); // jump to end
-   emit_ins1("jump");   // we want to jump if bools value was false
+   emit_ins1("jmp");   // we want to jump if bools value was false
    
    emit_labelf("$ie%zd", IF_COUNT);
    if (else_stmt) {
@@ -265,32 +265,35 @@ static void g_stmt_if(TreeBool bools, TreeStmt stmt, TreeStmt else_stmt) {
 
 static void g_stmt_while(TreeBool bools, TreeStmt stmt) {
    
+   emit_commf("while loop %zd", WHILE_COUNT);
    emit_labelf("$ws%zd", WHILE_COUNT);
    g_bools(bools);
    
-   emit_ins2f("push", "$wq%zd", WHILE_COUNT); // jump to else (even if no else)
-   emit_ins1("jz");   // we want to jump if bools value was 0
+   emit_ins2f("push", "$wq%zd", WHILE_COUNT); // jump to end
+   emit_ins1("jz");   // we want to jump to end if bools value was 0
    
    g_stmt(stmt);
    
-   emit_ins2f("push", "$ws%zd", WHILE_COUNT); // jump to end
-   emit_ins1("jump");   // we want to jump if bools value was false
+   emit_ins2f("push", "$ws%zd", WHILE_COUNT); // jump to beginning
+   emit_ins1("jmp");   // we want to jump if bools value was false
    
    emit_labelf("$wq%zd", WHILE_COUNT);
+   emit_commf("end while loop %zd", WHILE_COUNT);
+   
    WHILE_COUNT++;
 }
 
 static void g_stmt_do(TreeStmt stmt, TreeBool bools) {
    
-   emit_labelf("$ds%zd", WHILE_COUNT);
+   emit_labelf("$ws%zd", WHILE_COUNT);
    g_stmt(stmt);
    
    g_bools(bools);
 
-   emit_ins2f("push", "$ds%zd", WHILE_COUNT); // jump to end
+   emit_ins2f("push", "$ws%zd", WHILE_COUNT); // jump to end
    emit_ins1("jp");   // we want to jump if bools value was 1>0
 
-   emit_labelf("$dq%zd", WHILE_COUNT);
+   emit_labelf("$wq%zd", WHILE_COUNT);
    WHILE_COUNT++;
 
 }

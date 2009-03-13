@@ -46,6 +46,7 @@ extern TreeBlock parse(void) {
    // setjmp(env);
    SYM_DEPTH = 0;
    SYM_MAX_DEPTH = 0;
+   PARSE_ERROR = 0;
    
    TreeBlock block = p_block();
 

@@ -3,7 +3,11 @@
 #include "generator.h"
 
 int main() {
-  generate(parse());
-  // return generate(parse());
-  return 0;
+   
+   TreeBlock block = parse();
+   
+   if (PARSE_ERROR == 0)
+      generate(block);
+      
+   return PARSE_ERROR + GEN_ERROR;
 }

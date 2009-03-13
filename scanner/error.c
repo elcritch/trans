@@ -18,6 +18,7 @@ extern LINKAGE void error_parse(char *msg) {
   fprintf(OUTPUT,"parse error: %s (line: %d, char %d)\n",msg,line(),col());
   fflush(stdout); fflush(stderr);
   // kill(getpid(),SIGINT);
+  PARSE_ERROR = 1;
 }
 
 // error_scan(code, curr()->code, file_, line_);
