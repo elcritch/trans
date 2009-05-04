@@ -18,11 +18,11 @@ typedef struct treereal {
 } *TreeReal;
 
 
-extern TreeId p_decl_id();
-extern TreeId p_id();
-extern TreeNum p_num();
-extern TreeNum p_num_convert();
-extern TreeReal p_real();
+extern TreeId t_decl_id();
+extern TreeId t_id();
+extern TreeNum t_num();
+extern TreeNum t_num_convert();
+extern TreeReal t_real();
 
 #endif
 

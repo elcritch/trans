@@ -299,7 +299,7 @@ static void g_stmt_do(TreeStmt stmt, TreeBool bools) {
 }
 
 static void g_stmt_break() {
-   emit_ins2f("push", "$wq%zd", WHILE_COUNT-1); // goto last labeled loop
+   emit_ins2f("push", "$wq%zd", WHILE_COUNT); // goto last labeled loop
    emit_ins1("jmp");
 }
 
